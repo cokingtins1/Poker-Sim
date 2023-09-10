@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest --coverage",
-    "type": "module"
+    "test": "jest --coverage"
+    
   },
   "keywords": [],
   "author": "",
@@ -13,4 +14,7 @@
   "devDependencies": {
     "jest": "^29.6.4"
   }
+
 }
+
+
