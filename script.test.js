@@ -1,7 +1,7 @@
 // import { Players, testHand }  from "./Players"
 
 // import Players from "./script.js"
-import { testHand } from "./script.js"
+const {parseCards, checkEmpty, communityCards} = require("./script.js") 
 
 describe("#check", () => {
 	// test("it tests", () => {
@@ -11,7 +11,7 @@ describe("#check", () => {
 	// })
 
 	test("it tests", () => {
-		const value = 2
-		expect(testHand(value)).toBe(3)
+        const balls = []
+		expect(checkEmpty(balls)).toBe(false)
 	})
 })
