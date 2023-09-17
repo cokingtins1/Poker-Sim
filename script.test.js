@@ -36,16 +36,16 @@ describe("#Check Trips", () => {
 	})
 })
 
-// describe("#Check Straight", () => {
-// 	test("it tests for straight", () => {
-// 		const communityCards = ["2H", "9C", "10H", "JD", "QS"]
-// 		const playerCards = ["KS", "5D"]
-// 		const fullCards = [...communityCards, ...playerCards]
-// 		const parsedFullCards = parseCards(fullCards)
-// 		const combos = checkCombos(parsedFullCards)
-// 		expect(combos.straight.has).toBe(true)
-// 	})
-// })
+describe("#Check Straight", () => {
+	test("it tests for straight", () => {
+		const communityCards = ["2H", "9C", "10H", "JD", "QS"]
+		const playerCards = ["KS", "5D"]
+		const fullCards = [...communityCards, ...playerCards]
+		const parsedFullCards = parseCards(fullCards)
+		const combos = checkCombos(parsedFullCards)
+		expect(combos.straight.has).toBe(true)
+	})
+})
 
 describe("#Check Flush", () => {
 	test("it tests for flush", () => {

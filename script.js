@@ -1,5 +1,5 @@
-const communityCards = ["2H", "2D", "10H", "KH", "QH"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
-const playerCards = ["KH", "5D"]
+const communityCards = ["2H", "9C", "10H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
+const playerCards = ["KS", "5D"]
 
 const fullCards = [...communityCards, ...playerCards]
 
@@ -39,13 +39,16 @@ function checkHand(array) {
 function checkCombos(array) {
 	// Each rank should display what pair, twoPair, etc. they actually are to compare against other players
 
-	const pair = createRank()
-	const twoPair = createRank()
-	const trip = createRank()
-	const straight = createRank()
-	const flush = createRank()
-	const fullHouse = createRank()
-	const quad = createRank()
+	const highCard = createRank() // Order 1
+	const pair = createRank() // Order 2
+	const twoPair = createRank() // Order 3
+	const trip = createRank() // Order 4
+	const straight = createRank() // Order 5
+	const flush = createRank() // Order 6
+	const fullHouse = createRank() // Order 7
+	const quad = createRank() // Order 8
+	const straightFlush = createRank() // Order 9
+	const royalFlush = createRank() // Order 10
 
 	const valueArray = array.map((card) => card.value) // create array of only values
 	const unique = [...new Set(valueArray)] //create array of unique values
@@ -53,19 +56,16 @@ function checkCombos(array) {
 	const groupedByValue = groupBy(array, (card) => card.value) // group cards by value
 	const groupedBySuit = groupBy(array, (card) => card.suitCode) // group cards by suit
 
-	// if (unique.length > 4) {
-	// 	let count = 0
-	// 	debugger
-	// 	for (let i = 0; i < unique.length - 1; i++) {
-	// 		if (unique[i] + 1 === unique[i + 1]) {
-	// 			count = count + 1
-	// 		}
-	// 	}
-	// 	if (count >= 4) {
-	// 		straight.value = unique
-	// 		straight.has = true
-	// 	}
-	// }
+	// Check straight (should work if ace = 12)
+	for (let i = 0; i < unique.length - 4; i++) {
+		if (unique[i + 4] - unique[i] === 4) {
+			straight.has = true
+			straight.value = unique[i + 4] // log high card of straight
+			straight.order = 5
+		}
+	}
+
+	// if(unique[uni])
 
 	// Check for pair, trips, quads
 	let twoPairCombo = []
@@ -73,13 +73,16 @@ function checkCombos(array) {
 		if (groupedByValue[index].length === 2) {
 			pair.value = index
 			pair.has = true
+			pair.order = 2
 			twoPairCombo.push(index)
 		} else if (groupedByValue[index].length === 3) {
 			trip.value = index
 			trip.has = true
+			trip.order = 4
 		} else if (groupedByValue[index].length === 4) {
 			quad.value = index
 			quad.has = true
+			quad.order = 8
 		}
 	}
 
@@ -87,6 +90,7 @@ function checkCombos(array) {
 	if (twoPairCombo.length > 0) {
 		twoPair.value = twoPairCombo
 		twoPair.has = true
+		twoPair.order = 3
 	}
 
 	// Check for Flush
@@ -95,6 +99,7 @@ function checkCombos(array) {
 		if (groupedBySuit[key].length >= 5) {
 			flush.has = true
 			flush.value = key
+			flush.order = 6
 		}
 	}
 
@@ -102,6 +107,7 @@ function checkCombos(array) {
 	if (trip.has === true && pair.has === true) {
 		fullHouse.has = true
 		fullHouse.value = [trip.value, pair.value]
+		fullHouse.order = 7
 	}
 
 	const handRanks = { pair, twoPair, trip, straight, flush, fullHouse, quad }
@@ -113,6 +119,7 @@ function createRank() {
 	return {
 		value: undefined,
 		has: false,
+		order: 0,
 	}
 }
 
