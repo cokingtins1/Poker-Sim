@@ -1,5 +1,14 @@
-const communityCards = ["5D", "8C", "7C", "4C", "QH"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
-const playerCards = ["6C", "5C"]
+class Player {
+	constructor(name, hand) {
+		this.name = name
+		this.hand = hand
+	}
+}
+
+const player1 = new Player("Sean", ["7H", "AD"])
+
+const communityCards = ["5C", "3D", "2S", "8H", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
+const playerCards = ["7H", "AD"]
 
 const fullCards = [...communityCards, ...playerCards]
 
@@ -37,7 +46,6 @@ function checkCombos(array) {
 	const unique = [...new Set(valueArray)] //create array of unique values
 
 	const suitArray = array.map((card) => card.suitCode) // create array of only values
-	const uniqueSuit = [...new Set(suitArray)] //create array of unique values
 
 	console.log("valueArray:", valueArray)
 	console.log("SuitArray:", suitArray)
@@ -72,20 +80,21 @@ function checkCombos(array) {
 	}
 
 	// Check Straight
+	checkStraight(unique, suitArray) // Always run checkStraight in case there is Ace-high straight
+
 	if (unique[unique.length - 1] === 13) {
 		const checkAce = [0, ...unique.slice(0, -1)]
 		checkStraight(checkAce, suitArray)
 	}
 
-	checkStraight(unique, suitArray) // Always run checkStraight in case there is Ace-high straight
-
 	function checkStraight(straightArray, suitArray) {
 		let straightStart
 		let straightEnd
+
 		for (let i = 0; i < straightArray.length - 4; i++) {
 			if (straightArray[i + 4] - straightArray[i] === 4) {
-				straightStart = straightArray[i] //straightArray[i]
-				straightEnd = straightArray[i + 4] //straightArray[i + 4]
+				straightStart = straightArray[i]
+				straightEnd = straightArray[i + 4]
 
 				straight.has = true
 				straight.value = [straightStart, straightEnd] // log high card of straight
@@ -108,7 +117,7 @@ function checkCombos(array) {
 				}
 			}
 
-			if (Math.max(...Object.values(flushCount)) === 5) {
+			if (Math.max(...Object.values(flushCount)) >= 5) {
 				straightFlush.has = true
 				straightFlush.value = [straightStart, straightEnd]
 				straightFlush.order = 9
@@ -124,23 +133,6 @@ function checkCombos(array) {
 			}
 		}
 	}
-
-	// for (let i = straightStart; i < straightEnd; i++) {
-	// 	if (suitArray[i]) {
-	// 	}
-	// }
-
-	// function checkStraightFlush(straightArray, suitArray) {
-	// 	let straightStart
-	// 	for (let i = 0; i < straightArray.length - 4; i++) {
-	// 		if (straightArray[i + 4] - straightArray[i] === 4) {
-	// 			straightStart = i
-	// 			straight.has = true
-	// 			straight.value = straightArray[i + 4] // log high card of straight
-	// 			straight.order = 5
-	// 		}
-	// 	}
-	// }
 
 	// Check for Flush
 	const keys = Object.keys(groupedBySuit).map(Number)
@@ -160,6 +152,7 @@ function checkCombos(array) {
 	}
 
 	const handRanks = {
+		highCard,
 		pair,
 		twoPair,
 		trip,
@@ -170,8 +163,22 @@ function checkCombos(array) {
 		straightFlush,
 		royalFlush,
 	}
-	// return { pair, twoPair, trip, straight, fullHouse, quad }
-	return handRanks
+
+	// Assign high card if no other hands are present
+	if (Object.values(handRanks).every((rank) => rank.order === 0)) {
+		highCard.has = true
+		highCard.value = Math.max(...valueArray)
+		highCard.order = 1
+	}
+
+	let highestRank = null
+	for (const rankName in handRanks) {
+		const rank = handRanks[rankName]
+		if (rank.has && rank.order > (highestRank ? highestRank.order : -1)) {
+			highestRank = rankName
+		}
+	}
+	return highestRank
 }
 
 function createRank() {

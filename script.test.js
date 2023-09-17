@@ -6,6 +6,13 @@ const { parseCards, checkCombos, groupBy } = require("./script.js")
 describe("Check Poker Hands", () => {
 	const testCases = [
 		{
+			description: "High Card",
+			communityCards: ["5C", "3D", "2S", "8H", "QS"],
+			playerCards: ["7H", "AD"],
+			hand: "highCard",
+		},
+
+		{
 			description: "Pair",
 			communityCards: ["2H", "9C", "9H", "JD", "QS"],
 			playerCards: ["10H", "5D"],
