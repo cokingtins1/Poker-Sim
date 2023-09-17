@@ -1,25 +1,3 @@
-// import Players from './Players.js'
-
-class Players {
-	constructor(name, hand) {
-		this.name = name
-		this.hand = hand
-	}
-
-	set myHand(value) {
-		const [card1, card2] = value.split(" ")
-		this.hand = [card1, card2]
-	}
-}
-
-const player1 = new Players("Sean")
-
-player1.myHand = "AH 2S"
-
-function testHand(player) {
-	return player.hand[0]
-}
-
 const communityCards = ["2H", "2D", "10H", "KH", "QH"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
 const playerCards = ["KH", "5D"]
 
@@ -35,7 +13,7 @@ function parseCards(card) {
 		return { value, suitCode }
 	})
 
-	parsedCards.sort((a, b) => a.value - b.value)
+	parsedCards.sort((a, b) => a.value - b.value) // Sort cards by value
 	return parsedCards
 }
 
@@ -60,38 +38,14 @@ function checkHand(array) {
 
 function checkCombos(array) {
 	// Each rank should display what pair, twoPair, etc. they actually are to compare against other players
-	const pair = {
-		value: undefined,
-		has: false,
-	}
-	const twoPair = {
-		value: undefined,
-		has: false,
-	}
-	const trip = {
-		value: undefined,
-		has: false,
-	}
 
-	const straight = {
-		value: undefined,
-		has: false,
-	}
-
-	const flush = {
-		value: undefined,
-		has: false,
-	}
-
-	const fullHouse = {
-		value: undefined,
-		has: false,
-	}
-
-	const quad = {
-		value: undefined,
-		has: false,
-	}
+	const pair = createRank()
+	const twoPair = createRank()
+	const trip = createRank()
+	const straight = createRank()
+	const flush = createRank()
+	const fullHouse = createRank()
+	const quad = createRank()
 
 	const valueArray = array.map((card) => card.value) // create array of only values
 	const unique = [...new Set(valueArray)] //create array of unique values
@@ -153,6 +107,13 @@ function checkCombos(array) {
 	const handRanks = { pair, twoPair, trip, straight, flush, fullHouse, quad }
 	// return { pair, twoPair, trip, straight, fullHouse, quad }
 	return handRanks
+}
+
+function createRank() {
+	return {
+		value: undefined,
+		has: false,
+	}
 }
 
 function groupBy(array, func) {
