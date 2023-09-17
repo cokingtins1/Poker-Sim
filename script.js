@@ -20,8 +20,8 @@ function testHand(player) {
 	return player.hand[0]
 }
 
-const communityCards = ["2H", "9C", "9H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
-const playerCards = ["10H", "5D"]
+const communityCards = ["2H", "2D", "10H", "KH", "QH"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
+const playerCards = ["KH", "5D"]
 
 const fullCards = [...communityCards, ...playerCards]
 
@@ -72,12 +72,18 @@ function checkCombos(array) {
 		value: undefined,
 		has: false,
 	}
-	const fullHouse = {
+
+	const straight = {
 		value: undefined,
 		has: false,
 	}
 
-	const straight = {
+	const flush = {
+		value: undefined,
+		has: false,
+	}
+
+	const fullHouse = {
 		value: undefined,
 		has: false,
 	}
@@ -94,20 +100,26 @@ function checkCombos(array) {
 	const groupedBySuit = groupBy(array, (card) => card.suitCode) // group cards by suit
 
 	// if (unique.length > 4) {
+	// 	let count = 0
+	// 	debugger
 	// 	for (let i = 0; i < unique.length - 1; i++) {
-	// 		if (unique[i] + 1 !== unique[i + 1]) {
-	// 			break
+	// 		if (unique[i] + 1 === unique[i + 1]) {
+	// 			count = count + 1
 	// 		}
 	// 	}
-	// 	straight.value = unique
-	// 	straight.has = true
+	// 	if (count >= 4) {
+	// 		straight.value = unique
+	// 		straight.has = true
+	// 	}
 	// }
 
-	// Check for pair, two pair, trips, quads
+	// Check for pair, trips, quads
+	let twoPairCombo = []
 	for (const index of unique) {
 		if (groupedByValue[index].length === 2) {
 			pair.value = index
 			pair.has = true
+			twoPairCombo.push(index)
 		} else if (groupedByValue[index].length === 3) {
 			trip.value = index
 			trip.has = true
@@ -117,13 +129,28 @@ function checkCombos(array) {
 		}
 	}
 
+	// Check for Two Pair
+	if (twoPairCombo.length > 0) {
+		twoPair.value = twoPairCombo
+		twoPair.has = true
+	}
+
+	// Check for Flush
+	const keys = Object.keys(groupedBySuit).map(Number)
+	for (const key of keys) {
+		if (groupedBySuit[key].length >= 5) {
+			flush.has = true
+			flush.value = key
+		}
+	}
+
 	// Check for Full House
 	if (trip.has === true && pair.has === true) {
 		fullHouse.has = true
 		fullHouse.value = [trip.value, pair.value]
 	}
 
-	const handRanks = { pair, twoPair, trip, straight, fullHouse, quad }
+	const handRanks = { pair, twoPair, trip, straight, flush, fullHouse, quad }
 	// return { pair, twoPair, trip, straight, fullHouse, quad }
 	return handRanks
 }
