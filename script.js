@@ -20,8 +20,8 @@ function testHand(player) {
 	return player.hand[0]
 }
 
-const communityCards = ["10D", "9C", "9H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
-const playerCards = ["10H", "9D"]
+const communityCards = ["2H", "9C", "9H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
+const playerCards = ["10H", "5D"]
 
 const fullCards = [...communityCards, ...playerCards]
 
@@ -60,24 +60,29 @@ function checkHand(array) {
 
 function checkCombos(array) {
 	// Each rank should display what pair, twoPair, etc. they actually are to compare against other players
-	let pair = {
+	const pair = {
 		value: undefined,
 		has: false,
 	}
-	let twoPair = {
+	const twoPair = {
 		value: undefined,
 		has: false,
 	}
-	let trip = {
+	const trip = {
 		value: undefined,
 		has: false,
 	}
-	let fullHouse = {
+	const fullHouse = {
 		value: undefined,
 		has: false,
 	}
 
-	let quad = {
+	const straight = {
+		value: undefined,
+		has: false,
+	}
+
+	const quad = {
 		value: undefined,
 		has: false,
 	}
@@ -88,9 +93,15 @@ function checkCombos(array) {
 	const groupedByValue = groupBy(array, (card) => card.value) // group cards by value
 	const groupedBySuit = groupBy(array, (card) => card.suitCode) // group cards by suit
 
-	// return(groupedByValue[0].length)
-
-	// return(unique)
+	// if (unique.length > 4) {
+	// 	for (let i = 0; i < unique.length - 1; i++) {
+	// 		if (unique[i] + 1 !== unique[i + 1]) {
+	// 			break
+	// 		}
+	// 	}
+	// 	straight.value = unique
+	// 	straight.has = true
+	// }
 
 	// Check for pair, two pair, trips, quads
 	for (const index of unique) {
@@ -112,7 +123,8 @@ function checkCombos(array) {
 		fullHouse.value = [trip.value, pair.value]
 	}
 
-	const handRanks = { pair, twoPair, trip, fullHouse, quad }
+	const handRanks = { pair, twoPair, trip, straight, fullHouse, quad }
+	// return { pair, twoPair, trip, straight, fullHouse, quad }
 	return handRanks
 }
 
@@ -130,7 +142,7 @@ function groupBy(array, func) {
 
 console.log(checkCombos(parsedFullCards))
 
-console.log("card array:", parsedFullCards)
+// console.log("card array:", parsedFullCards)
 
 module.exports = {
 	parseCards,
