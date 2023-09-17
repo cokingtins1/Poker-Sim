@@ -20,7 +20,7 @@ function testHand(player) {
 	return player.hand[0]
 }
 
-const communityCards = ["2H", "9C", "9H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
+const communityCards = ["10D", "9C", "9H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
 const playerCards = ["10H", "9D"]
 
 const fullCards = [...communityCards, ...playerCards]
@@ -72,102 +72,68 @@ function checkCombos(array) {
 		value: undefined,
 		has: false,
 	}
+	let fullHouse = {
+		value: undefined,
+		has: false,
+	}
+
 	let quad = {
 		value: undefined,
 		has: false,
 	}
 
-	const valueArray = array.map((card) => card.value)
+	const valueArray = array.map((card) => card.value) // create array of only values
+	const unique = [...new Set(valueArray)] //create array of unique values
 
-	const duplicates = []
-	const uniquValues = {}
-	for (const value of valueArray) {
-		if (uniquValues[value]) {
-			console.log(uniquValues[value])
-			duplicates.push(value)
-		} else {
-			uniquValues[value] = true
+	const groupedByValue = groupBy(array, (card) => card.value) // group cards by value
+	const groupedBySuit = groupBy(array, (card) => card.suitCode) // group cards by suit
+
+	// return(groupedByValue[0].length)
+
+	// return(unique)
+
+	// Check for pair, two pair, trips, quads
+	for (const index of unique) {
+		if (groupedByValue[index].length === 2) {
+			pair.value = index
+			pair.has = true
+		} else if (groupedByValue[index].length === 3) {
+			trip.value = index
+			trip.has = true
+		} else if (groupedByValue[index].length === 4) {
+			quad.value = index
+			quad.has = true
 		}
 	}
-	return { duplicates, uniquValues }
+
+	// Check for Full House
+	if (trip.has === true && pair.has === true) {
+		fullHouse.has = true
+		fullHouse.value = [trip.value, pair.value]
+	}
+
+	const handRanks = { pair, twoPair, trip, fullHouse, quad }
+	return handRanks
+}
+
+function groupBy(array, func) {
+	return array.reduce((grouping, element) => {
+		const key = func(element)
+		if (grouping[key]) {
+			grouping[key].push(element)
+		} else {
+			grouping[key] = [element]
+		}
+		return grouping
+	}, {})
 }
 
 console.log(checkCombos(parsedFullCards))
 
-// function findDuplicates(array, property) {
-// 	const duplicates = []
-// 	const uniquValues = {}
-
-// 	for (const obj of array) {
-// 		const value = obj[property]
-// 		if (uniquValues[value]) {
-// 			duplicates.push(obj)
-// 		} else {
-// 			uniquValues[value] = true
-// 		}
-// 	}
-// 	return duplicates
-// }
-
-// console.log(checkHand(parsedFullCards))
-
 console.log("card array:", parsedFullCards)
 
-// function createMatrix(community) {
-// 	const matrix = []
-// 	let element = {
-// 		value: undefined,
-// 		suit: undefined,
-// 		filled: undefined,
-// 	}
-// 	for (let j = 0; j < 13; j++) {
-// 		// value of the card
-// 		const row = []
-// 		for (let i = 0; i < 4; i++) {
-// 			// suit of the card
-// 			// ["0-2", "6-1","7-2", "9-0", "10-3" ]
-
-// 			element = {
-// 				value: j,
-// 				suit: i,
-// 				filled: false,
-// 			}
-
-// 			for (let index = 0; index < community.length; index++) {
-// 				if (
-// 					community[index].value === j &&
-// 					community[index].suitCode === i
-// 				) {
-// 					element.filled = true
-// 				}
-// 			}
-
-// 			matrix.push(element)
-// 		}
-// 	}
-// 	return matrix
-// }
-
-// const matrix = createMatrix(parsedComCards)
-// const reducedMatrix = matrix.filter((obj) => obj.filled !== false)
-
-// console.log(matrix[6])
-
-// parsedComCards.forEach((element) => {
-// 	console.log(element.value)
-// })
-
-// Testing
-// function checkEmpty(matrix) {
-// 	if (matrix.length > 0) {
-// 		return true
-// 	} else {
-// 		return false
-// 	}
-// }
-// const balls = []
-// console.log(checkEmpty(communityCards))
-
-// module.exports = {
-// 	checkEmpty,
-// }
+module.exports = {
+	parseCards,
+	checkCombos,
+	groupBy,
+}

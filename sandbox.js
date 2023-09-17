@@ -13,5 +13,9 @@ function parseCards(card) {
 
 
 
-const valueMap = { J: 9, Q: 10, K:11, A:12 }
-console.log(valueMap["J"])
+
+
+const test1 = [0,2,4,3,5,5]
+const testSet = new Set(test1)
+
+console.log(testSet[0])
