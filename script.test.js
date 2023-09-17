@@ -3,79 +3,73 @@
 // import Players from "./script.js"
 const { parseCards, checkCombos, groupBy } = require("./script.js")
 
-describe("#Check Pair", () => {
-	test("it tests for pairs", () => {
-		const communityCards = ["2H", "9C", "9H", "JD", "QS"]
-		const playerCards = ["10H", "5D"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.pair.has).toBe(true)
-	})
-})
+describe("Check Poker Hands", () => {
+	const testCases = [
+		{
+			description: "Pair",
+			communityCards: ["2H", "9C", "9H", "JD", "QS"],
+			playerCards: ["10H", "5D"],
+			hand: "pair",
+		},
+		{
+			description: "Two Pair",
+			communityCards: ["2H", "2D", "10H", "KD", "QS"],
+			playerCards: ["KS", "5D"],
+			hand: "twoPair",
+		},
+		{
+			description: "Trips",
+			communityCards: ["2H", "9C", "9H", "JD", "QS"],
+			playerCards: ["9S", "5D"],
+			hand: "trip",
+		},
+		{
+			description: "Straight",
+			communityCards: ["2H", "9C", "10H", "JD", "QS"],
+			playerCards: ["KS", "5D"],
+			hand: "straight",
+		},
+		{
+			description: "Flush",
+			communityCards: ["2H", "2D", "10H", "KH", "QH"],
+			playerCards: ["KH", "5D"],
+			hand: "flush",
+		},
+		{
+			description: "Full House",
+			communityCards: ["2H", "9C", "9H", "JD", "QS"],
+			playerCards: ["2D", "2S"],
+			hand: "fullHouse",
+		},
+		{
+			description: "Quads",
+			communityCards: ["9D", "9C", "9H", "JD", "QS"],
+			playerCards: ["9S", "5D"],
+			hand: "quad",
+		},
+		{
+			description: "Straight Flush",
+			communityCards: ["5D", "8C", "7C", "4C", "QH"],
+			playerCards: ["6C", "5C"],
+			hand: "straightFlush",
+		},
+		{
+			description: "Royal Flush",
+			communityCards: ["5D", "10H", "JC", "JH", "QH"],
+			playerCards: ["KH", "AH"],
+			hand: "royalFlush",
+		},
+	]
 
-describe("#Check Two-Pair", () => {
-	test("it tests for pairs", () => {
-		const communityCards = ["2H", "2D", "10H", "KD", "QS"]
-		const playerCards = ["KS", "5D"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.twoPair.has).toBe(true)
-	})
-})
-
-describe("#Check Trips", () => {
-	test("it tests for trips", () => {
-		const communityCards = ["2H", "9C", "9H", "JD", "QS"]
-		const playerCards = ["9S", "5D"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.trip.has).toBe(true)
-	})
-})
-
-describe("#Check Straight", () => {
-	test("it tests for straight", () => {
-		const communityCards = ["2H", "9C", "10H", "JD", "QS"]
-		const playerCards = ["KS", "5D"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.straight.has).toBe(true)
-	})
-})
-
-describe("#Check Flush", () => {
-	test("it tests for flush", () => {
-		const communityCards = ["2H", "2D", "10H", "KH", "QH"]
-		const playerCards = ["KH", "5D"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.flush.has).toBe(true)
-	})
-})
-
-describe("#Check Full House", () => {
-	test("it tests for full house", () => {
-		const communityCards = ["2H", "9C", "9H", "JD", "QS"]
-		const playerCards = ["2D", "2S"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.fullHouse.has).toBe(true)
-	})
-})
-
-describe("#Check Quads", () => {
-	test("it tests for quads", () => {
-		const communityCards = ["9D", "9C", "9H", "JD", "QS"]
-		const playerCards = ["9S", "5D"]
-		const fullCards = [...communityCards, ...playerCards]
-		const parsedFullCards = parseCards(fullCards)
-		const combos = checkCombos(parsedFullCards)
-		expect(combos.quad.has).toBe(true)
+	testCases.forEach((testCase) => {
+		test(testCase.description, () => {
+			const fullCards = [
+				...testCase.communityCards,
+				...testCase.playerCards,
+			]
+			const parsedFullCards = parseCards(fullCards)
+			const combos = checkCombos(parsedFullCards)
+			expect(combos[testCase.hand].has).toBe(true)
+		})
 	})
 })

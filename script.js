@@ -1,13 +1,13 @@
-const communityCards = ["2H", "9C", "10H", "JD", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
-const playerCards = ["KS", "5D"]
+const communityCards = ["5D", "8C", "7C", "4C", "QH"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
+const playerCards = ["6C", "5C"]
 
 const fullCards = [...communityCards, ...playerCards]
 
 function parseCards(card) {
 	const parsedCards = card.map((card) => {
-		const valueMap = { J: 9, Q: 10, K: 11, A: 12 }
+		const valueMap = { J: 10, Q: 11, K: 12, A: 13 }
 		const value =
-			valueMap[card.slice(0, -1)] || parseInt(card.slice(0, -1)) - 2
+			valueMap[card.slice(0, -1)] || parseInt(card.slice(0, -1)) - 1
 		const suitMap = { D: 0, C: 1, H: 2, S: 3 }
 		const suitCode = suitMap[card.slice(-1)]
 		return { value, suitCode }
@@ -18,23 +18,6 @@ function parseCards(card) {
 }
 
 const parsedFullCards = parseCards(fullCards)
-
-function checkHand(array) {
-	let handValue = {
-		highCard: false,
-		onePair: false,
-		twoPair: false,
-		threeOfKind: false,
-		straight: false,
-		flush: false,
-		fullHouse: false,
-		fourOfKind: false,
-		straightFlush: false,
-		royalFlush: false,
-	}
-
-	// return findDuplicates(array, "value")
-}
 
 function checkCombos(array) {
 	// Each rank should display what pair, twoPair, etc. they actually are to compare against other players
@@ -53,19 +36,14 @@ function checkCombos(array) {
 	const valueArray = array.map((card) => card.value) // create array of only values
 	const unique = [...new Set(valueArray)] //create array of unique values
 
+	const suitArray = array.map((card) => card.suitCode) // create array of only values
+	const uniqueSuit = [...new Set(suitArray)] //create array of unique values
+
+	console.log("valueArray:", valueArray)
+	console.log("SuitArray:", suitArray)
+
 	const groupedByValue = groupBy(array, (card) => card.value) // group cards by value
 	const groupedBySuit = groupBy(array, (card) => card.suitCode) // group cards by suit
-
-	// Check straight (should work if ace = 12)
-	for (let i = 0; i < unique.length - 4; i++) {
-		if (unique[i + 4] - unique[i] === 4) {
-			straight.has = true
-			straight.value = unique[i + 4] // log high card of straight
-			straight.order = 5
-		}
-	}
-
-	// if(unique[uni])
 
 	// Check for pair, trips, quads
 	let twoPairCombo = []
@@ -87,11 +65,82 @@ function checkCombos(array) {
 	}
 
 	// Check for Two Pair
-	if (twoPairCombo.length > 0) {
+	if (twoPairCombo.length > 1) {
 		twoPair.value = twoPairCombo
 		twoPair.has = true
 		twoPair.order = 3
 	}
+
+	// Check Straight
+	if (unique[unique.length - 1] === 13) {
+		const checkAce = [0, ...unique.slice(0, -1)]
+		checkStraight(checkAce, suitArray)
+	}
+
+	checkStraight(unique, suitArray) // Always run checkStraight in case there is Ace-high straight
+
+	function checkStraight(straightArray, suitArray) {
+		let straightStart
+		let straightEnd
+		for (let i = 0; i < straightArray.length - 4; i++) {
+			if (straightArray[i + 4] - straightArray[i] === 4) {
+				straightStart = straightArray[i] //straightArray[i]
+				straightEnd = straightArray[i + 4] //straightArray[i + 4]
+
+				straight.has = true
+				straight.value = [straightStart, straightEnd] // log high card of straight
+				straight.order = 5
+			}
+		}
+
+		if (straight.has) {
+			const flushCount = {}
+
+			for (
+				let i = valueArray.indexOf(straightStart);
+				i < valueArray.indexOf(straightEnd) + 1;
+				i++
+			) {
+				if (flushCount[suitArray[i]]) {
+					flushCount[suitArray[i]]++
+				} else {
+					flushCount[suitArray[i]] = suitArray[i]
+				}
+			}
+
+			if (Math.max(...Object.values(flushCount)) === 5) {
+				straightFlush.has = true
+				straightFlush.value = [straightStart, straightEnd]
+				straightFlush.order = 9
+			}
+
+			if (
+				Math.max(...Object.values(flushCount)) >= 5 &&
+				straightEnd === 13
+			) {
+				royalFlush.has = true
+				royalFlush.value = [straightStart, straightEnd]
+				royalFlush.order = 10
+			}
+		}
+	}
+
+	// for (let i = straightStart; i < straightEnd; i++) {
+	// 	if (suitArray[i]) {
+	// 	}
+	// }
+
+	// function checkStraightFlush(straightArray, suitArray) {
+	// 	let straightStart
+	// 	for (let i = 0; i < straightArray.length - 4; i++) {
+	// 		if (straightArray[i + 4] - straightArray[i] === 4) {
+	// 			straightStart = i
+	// 			straight.has = true
+	// 			straight.value = straightArray[i + 4] // log high card of straight
+	// 			straight.order = 5
+	// 		}
+	// 	}
+	// }
 
 	// Check for Flush
 	const keys = Object.keys(groupedBySuit).map(Number)
@@ -110,7 +159,17 @@ function checkCombos(array) {
 		fullHouse.order = 7
 	}
 
-	const handRanks = { pair, twoPair, trip, straight, flush, fullHouse, quad }
+	const handRanks = {
+		pair,
+		twoPair,
+		trip,
+		straight,
+		flush,
+		fullHouse,
+		quad,
+		straightFlush,
+		royalFlush,
+	}
 	// return { pair, twoPair, trip, straight, fullHouse, quad }
 	return handRanks
 }
@@ -137,7 +196,22 @@ function groupBy(array, func) {
 
 console.log(checkCombos(parsedFullCards))
 
-// console.log("card array:", parsedFullCards)
+function checkHand(array) {
+	let handValue = {
+		highCard: false,
+		onePair: false,
+		twoPair: false,
+		threeOfKind: false,
+		straight: false,
+		flush: false,
+		fullHouse: false,
+		fourOfKind: false,
+		straightFlush: false,
+		royalFlush: false,
+	}
+
+	// return findDuplicates(array, "value")
+}
 
 module.exports = {
 	parseCards,
