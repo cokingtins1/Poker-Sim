@@ -1,30 +1,5 @@
-// class Player {
-// 	constructor(name, hand) {
-// 		this.name = name
-// 		this.hand = hand
-// 	}
-// }
-
-// const player1 = new Player("Sean", ["7H", "AD"])
-
-function parseCards(card) {
-	const parsedCards = card.map((card) => {
-		const valueMap = { J: 10, Q: 11, K: 12, A: 13 }
-		const value =
-			valueMap[card.slice(0, -1)] || parseInt(card.slice(0, -1)) - 1
-		const suitMap = { D: 0, C: 1, H: 2, S: 3 }
-		const suitCode = suitMap[card.slice(-1)]
-		return { value, suitCode }
-	})
-
-	parsedCards.sort((a, b) => a.value - b.value) // Sort cards by value
-	return parsedCards
-}
-
-export default function checkCombos(inputArray) {
+export function checkCombos(inputArray) {
 	const array = parseCards(inputArray)
-
-	// Each rank should display what pair, twoPair, etc. they actually are to compare against other players
 
 	const highCard = createRank() // Order 1
 	const pair = createRank() // Order 2
@@ -175,8 +150,26 @@ export default function checkCombos(inputArray) {
 			hand = handRanks[rankName]
 		}
 	}
-	// return hand
-    return handRanks
+
+	// return this for non testing
+	return hand
+
+	// return this for testing
+	// return handRanks
+}
+
+function parseCards(card) {
+	const parsedCards = card.map((card) => {
+		const valueMap = { J: 10, Q: 11, K: 12, A: 13 }
+		const value =
+			valueMap[card.slice(0, -1)] || parseInt(card.slice(0, -1)) - 1
+		const suitMap = { D: 0, C: 1, H: 2, S: 3 }
+		const suitCode = suitMap[card.slice(-1)]
+		return { value, suitCode }
+	})
+
+	parsedCards.sort((a, b) => a.value - b.value) // Sort cards by value
+	return parsedCards
 }
 
 function createRank() {
@@ -198,9 +191,3 @@ function groupBy(array, func) {
 		return grouping
 	}, {})
 }
-
-// module.exports = {
-// 	parseCards,
-// 	checkCombos,
-// 	groupBy,
-// }
