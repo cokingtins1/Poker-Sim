@@ -1,16 +1,11 @@
-class Player {
-	constructor(name, hand) {
-		this.name = name
-		this.hand = hand
-	}
-}
+// class Player {
+// 	constructor(name, hand) {
+// 		this.name = name
+// 		this.hand = hand
+// 	}
+// }
 
-const player1 = new Player("Sean", ["7H", "AD"])
-
-const communityCards = ["5C", "3D", "2S", "8H", "QS"] //["0-2", "6-1","7-2", "9-0", "10-3" ] 2H, 8C, 9H, JD, QS
-const playerCards = ["7H", "AD"]
-
-const fullCards = [...communityCards, ...playerCards]
+// const player1 = new Player("Sean", ["7H", "AD"])
 
 function parseCards(card) {
 	const parsedCards = card.map((card) => {
@@ -26,9 +21,9 @@ function parseCards(card) {
 	return parsedCards
 }
 
-const parsedFullCards = parseCards(fullCards)
+export default function checkCombos(inputArray) {
+	const array = parseCards(inputArray)
 
-function checkCombos(array) {
 	// Each rank should display what pair, twoPair, etc. they actually are to compare against other players
 
 	const highCard = createRank() // Order 1
@@ -47,8 +42,8 @@ function checkCombos(array) {
 
 	const suitArray = array.map((card) => card.suitCode) // create array of only values
 
-	console.log("valueArray:", valueArray)
-	console.log("SuitArray:", suitArray)
+	// console.log("valueArray:", valueArray)
+	// console.log("SuitArray:", suitArray)
 
 	const groupedByValue = groupBy(array, (card) => card.value) // group cards by value
 	const groupedBySuit = groupBy(array, (card) => card.suitCode) // group cards by suit
@@ -171,14 +166,17 @@ function checkCombos(array) {
 		highCard.order = 1
 	}
 
-	let highestRank = null
+	// Return hand that player has
+	let hand = null
 	for (const rankName in handRanks) {
 		const rank = handRanks[rankName]
-		if (rank.has && rank.order > (highestRank ? highestRank.order : -1)) {
-			highestRank = rankName
+		// console.log(handRanks[rankName])
+		if (rank.has && rank.order > (hand ? hand.order : -1)) {
+			hand = handRanks[rankName]
 		}
 	}
-	return highestRank
+	// return hand
+    return handRanks
 }
 
 function createRank() {
@@ -201,27 +199,8 @@ function groupBy(array, func) {
 	}, {})
 }
 
-console.log(checkCombos(parsedFullCards))
-
-function checkHand(array) {
-	let handValue = {
-		highCard: false,
-		onePair: false,
-		twoPair: false,
-		threeOfKind: false,
-		straight: false,
-		flush: false,
-		fullHouse: false,
-		fourOfKind: false,
-		straightFlush: false,
-		royalFlush: false,
-	}
-
-	// return findDuplicates(array, "value")
-}
-
-module.exports = {
-	parseCards,
-	checkCombos,
-	groupBy,
-}
+// module.exports = {
+// 	parseCards,
+// 	checkCombos,
+// 	groupBy,
+// }
