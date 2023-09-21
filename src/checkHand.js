@@ -1,4 +1,4 @@
-export function checkCombos(inputArray) {
+export default function checkCombos(inputArray) {
 	const array = parseCards(inputArray)
 
 	const highCard = createRank() // Order 1
