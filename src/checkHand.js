@@ -74,8 +74,8 @@ export default function checkCombos(inputArray) {
 
 		if (straight.has) {
 			const flushCount = {}
-            // debugger
 
+			// debugger
 			for (
 				let i = valueArray.indexOf(straightStart);
 				i < valueArray.indexOf(straightEnd) + 1;
@@ -85,7 +85,7 @@ export default function checkCombos(inputArray) {
 					flushCount[suitArray[i]]++
 				} else {
 					// flushCount[suitArray[i]] = suitArray[i]
-					flushCount[suitArray[i]]++
+					flushCount[suitArray[i]] = 1
 				}
 			}
 
@@ -107,6 +107,7 @@ export default function checkCombos(inputArray) {
 	}
 
 	// Check for Flush
+
 	const keys = Object.keys(groupedBySuit).map(Number)
 	for (const key of keys) {
 		if (groupedBySuit[key].length >= 5) {
@@ -154,7 +155,7 @@ export default function checkCombos(inputArray) {
 	}
 
 	// return this for non testing
-    return hand
+	return hand
 
 	// return this for testing
 	// return handRanks
@@ -181,8 +182,6 @@ function createRank() {
 		order: 0,
 	}
 }
-
-
 
 function groupBy(array, func) {
 	return array.reduce((grouping, element) => {

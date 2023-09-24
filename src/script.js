@@ -1,5 +1,6 @@
 import checkCombos from "./checkHand.js"
-// import defineHand from "./checkHand.js"
+import setUpGame from './setUpCards.js'
+
 
 class Player {
 	constructor(name, hand) {
@@ -8,12 +9,22 @@ class Player {
 	}
 }
 
-const player1 = new Player("Sean", ["7H", "AD"])
 
-const communityCards = ["2C", "3H", "4H", "5H", "6H"]
-const playerCards = ["9S", "JH"]
+const communityCards = ["KD", "3H", "4H", "5H", "6H"]
+const playerCards = ["7D", "JH"]
 
 const fullCards = [...communityCards, ...playerCards]
+
+const deck = setUpGame()
+
+
+// Number of players = 3
+// 
+
+
+
+console.log(deck.pop())
+
 
 
 console.log(checkCombos(fullCards))
