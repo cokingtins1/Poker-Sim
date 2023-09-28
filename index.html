@@ -4,9 +4,21 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="./src/script.js" type="module" defer></script>
+		<link rel="stylesheet" href="styles.css" />
 		<title>Document</title>
 	</head>
 	<body>
-		<div data-output></div>
+		<div class="table" data-players></div>
+
+		<button data-button>click me</button>
+
+		<template id="mytemplate">
+			<div class="playerTemplate">
+				<div data-playerNum>Player 1</div>
+				<div data-playerHand>hand: JS, AS</div>
+				<div data-playerPosition>dealer</div>
+				<div data-playerStack>$500</div>
+			</div>
+		</template>
 	</body>
 </html>
