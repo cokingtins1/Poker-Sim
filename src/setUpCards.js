@@ -1,8 +1,12 @@
 // Create Cards
 
-export default class Deck {
+import { NUM_PLAYERS } from "./createPlayers.js"
+
+class Deck {
 	constructor() {
 		this.cards = this.setUpGame()
+		this.playerCards = this.deal()
+		// this.playerCards = this.deal()
 	}
 
 	setUpGame() {
@@ -31,16 +35,51 @@ export default class Deck {
 		return deck
 	}
 
-	deal(){
-		if(this.cards.length === 0){
+	// get playerCards() {
+	// 	if (this.cards.length !== 0) {
+	// 		const playerCards = []
+
+	// 		for (let i = 1; i <= NUM_PLAYERS; i++) {
+	// 			playerCards[i] = []
+	// 			playerCards[i][1] = deck.cards.pop()
+	// 		}
+
+	// 		for (let i = 1; i <= NUM_PLAYERS; i++) {
+	// 			playerCards[i][2] = deck.cards.pop()
+	// 		}
+
+	// 		return playerCards.map((subArray) =>
+	// 			subArray.filter((item) => item !== undefined)
+	// 		)
+	// 	} else {
+	// 		return null // Deck is empty
+	// 	}
+	// }
+
+	deal(cards) {
+		// console.log(deck.cards)
+		if (cards.length !== 0) {
+			const playerCards = []
+
+			for (let i = 1; i <= NUM_PLAYERS; i++) {
+				playerCards[i] = []
+				playerCards[i][1] = deck.cards.pop()
+			}
+
+			for (let i = 1; i <= NUM_PLAYERS; i++) {
+				playerCards[i][2] = deck.cards.pop()
+			}
+
+			return playerCards.map((subArray) =>
+				subArray.filter((item) => item !== undefined)
+			)
+		} else {
 			return null // Deck is empty
-		} return this.cards.pop()
-	} 
+		}
+	}
 }
 
-const deck = new Deck
-console.log(deck.deal(), deck.length)
-
+// export const deck = new Deck()
 
 // small blind anti
 // big blind anti
@@ -53,6 +92,3 @@ console.log(deck.deal(), deck.length)
 // dealer +1 bet
 // dealer +2 bet
 // ... dealer +n bet
-
-
-

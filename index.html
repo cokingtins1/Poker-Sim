@@ -4,20 +4,30 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="./src/script.js" type="module" defer></script>
+		<!-- <script src="./src/createPlayers.js" type="module" defer></script> -->
 		<link rel="stylesheet" href="styles.css" />
 		<title>Document</title>
 	</head>
 	<body>
-		<div class="table" data-players></div>
+		<div class="table" data-players>
+			<img src="" alt="" />
+			<div class="communityCards" data-community-cards></div>
+		</div>
 
-		<button data-button>click me</button>
+		<button data-button-setup>Set Up Game</button>
+		<button data-button-flop>Flop</button>
 
 		<template id="mytemplate">
 			<div class="playerTemplate">
 				<div data-playerNum>Player 1</div>
 				<div data-playerHand>hand: JS, AS</div>
+				<div data-playerHandImg>
+					hand: JS, AS
+					<img src="./cards/10C.svg" alt="" />
+					<img src="./cards/10C.svg" alt="" />
+				</div>
 				<div data-playerPosition>dealer</div>
-				<div data-playerStack>$500</div>
+				<div data-playerChips>$500</div>
 			</div>
 		</template>
 	</body>

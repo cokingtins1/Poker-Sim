@@ -1,29 +1,73 @@
 import checkCombos from "./checkHand.js"
-import setUpGame from "./setUpCards.js"
+import { players, NUM_PLAYERS, deck } from "./createPlayers.js"
 
-const NUM_PLAYERS = 5
-const button = document.querySelector("[data-button]")
+const setUpButton = document.querySelector("[data-button-setup]")
+const flopButton = document.querySelector("[data-button-flop]")
 const playerTemplate = document.getElementById("mytemplate")
 const playerDiv = document.querySelector("[data-players]")
+const communityCards = document.querySelector("[data-community-cards]")
 
-button.addEventListener("click", () => {
-	for (let i = 1; i <= NUM_PLAYERS; i++) {
+setUpButton.addEventListener("click", () => {
+	for (let i = 0; i < NUM_PLAYERS; i++) {
 		const element = playerTemplate.content.cloneNode(true)
 
-		setValue("playerNum", `Player ${i}`, { parent: element })
+		setValue("playerNum", players[i].name, { parent: element })
+
+		const imageMap = getCardImage(players[i].hand)
+		setValue("playerHand", players[i].hand, { parent: element })
+		setValue("playerHandImg", "", { parent: element }, imageMap)
+		setValue("playerChips", players[i].chips, { parent: element })
 
 		playerDiv.appendChild(element)
 	}
+
+	// console.log(players)
+})
+flopButton.addEventListener("click", () => {
+	communityCards.append(deck.communityCards)
 })
 
-function setValue(selector, value, { parent = document } = {}) {
-	parent.querySelector(`[data-${selector}]`).textContent = value
+function setValue(
+	selector,
+	value = "",
+	{ parent = document } = {},
+	imageMap = []
+) {
+	const targetElement = parent.querySelector(`[data-${selector}]`)
+
+	if (!targetElement) {
+		console.warn("element with selector is not found")
+	}
+
+	if (value !== null) {
+		parent.querySelector(`[data-${selector}]`).textContent = value
+		// console.log(targetElement)
+	}
+
+	const imageContainer = targetElement.querySelector('[data-playerHandImg]')
+
+	if (imageContainer) {
+		console.log(imageContainer)
+		// imageContainer.querySelector("img").src = './cards/10C.svg'
+		// imageMap.forEach((image) => {
+
+		// })
+	}
 }
 
-const communityCards = ["KD", "3H", "4H", "5H", "6H"]
-const playerCards = ["7D", "JH"]
+function getCardImage(cards) {
+	let imageCards = []
+	cards.forEach((card) => {
+		imageCards.push(`${card}.svg`)
+	})
 
-const fullCards = [...communityCards, ...playerCards]
+	return imageCards
+}
+
+// const communityCards = ["KD", "3H", "4H", "5H", "6H"]
+// const playerCards = ["7D", "JH"]
+
+// const fullCards = [...communityCards, ...playerCards]
 
 // Initialize the Game
 // const deck = setUpGame(); // Create a deck of cards and shuffle it
