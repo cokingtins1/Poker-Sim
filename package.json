@@ -13,5 +13,8 @@
     "@babel/core": "^7.22.20",
     "@babel/preset-env": "^7.22.20",
     "jest": "^29.6.4"
+  },
+  "dependencies": {
+    "cardsJS": "^1.1.1"
   }
 }

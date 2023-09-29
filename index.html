@@ -6,6 +6,7 @@
 		<script src="./src/script.js" type="module" defer></script>
 		<!-- <script src="./src/createPlayers.js" type="module" defer></script> -->
 		<link rel="stylesheet" href="styles.css" />
+
 		<title>Document</title>
 	</head>
 	<body>
@@ -16,6 +17,9 @@
 
 		<button data-button-setup>Set Up Game</button>
 		<button data-button-flop>Flop</button>
+		<div>
+			<img class="card" src="./cards/10C.svg" alt="" />
+		</div>
 
 		<template id="mytemplate">
 			<div class="playerTemplate">
@@ -23,8 +27,8 @@
 				<div data-playerHand>hand: JS, AS</div>
 				<div data-playerHandImg>
 					hand: JS, AS
-					<img src="./cards/10C.svg" alt="" />
-					<img src="./cards/10C.svg" alt="" />
+					<img data-card1  src="./cards/10C.svg" alt="" />
+					<img data-card2 src="./cards/10C.svg" alt="" />
 				</div>
 				<div data-playerPosition>dealer</div>
 				<div data-playerChips>$500</div>

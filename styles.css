@@ -32,3 +32,12 @@
     border-radius: 0.25rem;
     padding: 0.25rem;
 }
+
+img.card {
+	width: 100px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	vertical-align: initial;
+	box-sizing: initial;
+}
