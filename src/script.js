@@ -1,6 +1,6 @@
 import checkCombos from "./checkHand.js"
 import { players, NUM_PLAYERS, deck } from "./createPlayers.js"
-import { getCardImage } from "./renderCardImg.js"
+import { renderCards } from "./renderCardImg.js"
 
 const setUpButton = document.querySelector("[data-button-setup]")
 const flopButton = document.querySelector("[data-button-flop]")
@@ -12,12 +12,14 @@ setUpButton.addEventListener("click", () => {
 	for (let i = 0; i < NUM_PLAYERS; i++) {
 		const element = playerTemplate.content.cloneNode(true)
 
-		const imageMap = getCardImage(players[i].hand)
-		setValue("playerHandImg", null, { parent: element }, imageMap)
+		// const imageMap = getCardImage(players[i].hand)
+		// setValue("playerHandImg", null, { parent: element }, imageMap)
 
 		setValue("playerNum", players[i].name, { parent: element })
 		setValue("playerHand", players[i].hand, { parent: element })
 		setValue("playerChips", players[i].chips, { parent: element })
+
+		renderCards("playerHandImg", players[i].hand, { parent: element })
 
 		playerDiv.appendChild(element)
 	}
@@ -26,26 +28,8 @@ flopButton.addEventListener("click", () => {
 	communityCards.append(deck.communityCards)
 })
 
-function setValue(
-	selector,
-	value = "",
-	{ parent = document } = {},
-	imageMap = []
-) {
-	const targetElement = parent.querySelector(`[data-${selector}]`)
-
-	if (!targetElement) {
-		console.warn("element with selector is not found")
-	}
-
-	if (value !== null) {
-		targetElement.textContent = value
-		// console.log(targetElement)
-	} else {
-		targetElement.querySelector("[data-card1]").src = imageMap[0]
-		targetElement.querySelector("[data-card2]").src = imageMap[1]
-
-	}
+function setValue(selector, value, { parent = document } = {}) {
+	parent.querySelector(`[data-${selector}]`).textContent = value
 }
 
 // const communityCards = ["KD", "3H", "4H", "5H", "6H"]
