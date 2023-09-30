@@ -1,4 +1,6 @@
-// import { deck } from "./setUpCards.js"
+import checkCombos from "./checkHand.js"
+
+import { deck } from "./script.js"
 
 export const NUM_PLAYERS = 4
 
@@ -6,16 +8,18 @@ class Player {
 	constructor(name, hand, chips) {
 		this.name = name
 		this.hand = hand
+
+		this.handValue = checkCombos(hand, [])
 		this.chips = chips
 	}
 }
 
-class Deck {
+export class Deck {
 	constructor() {
-		this.cards = this.setUpGame()
-		this.playerCards = this.deal()
-        this.burnCards = this.flop().burnCards
-        this.communityCards = this.flop().communityCards
+		this.cards = []
+		this.playerCards = []
+		this.burnCards = []
+		this.communityCards = []
 	}
 
 	setUpGame() {
@@ -40,66 +44,96 @@ class Deck {
 				deck[currentIndex],
 			]
 		}
-
-		return deck
+		this.cards = deck
+		return this.cards
 	}
 
-	deal() {
-		// console.log(deck.cards)
+	deal(players) {
 		if (this.cards.length !== 0) {
 			const playerCards = []
 
 			for (let i = 1; i <= NUM_PLAYERS; i++) {
 				playerCards[i] = []
 				playerCards[i][1] = this.cards.pop()
+				players[i - 1].hand = playerCards[i].filter(
+					(item) => item !== undefined
+				)
 			}
 
 			for (let i = 1; i <= NUM_PLAYERS; i++) {
 				playerCards[i][2] = this.cards.pop()
+				players[i - 1].hand = playerCards[i].filter(
+					(item) => item !== undefined
+				)
 			}
 
-			return playerCards.map((subArray) =>
-				subArray.filter((item) => item !== undefined)
-			)
+            this.checkHandVal(players)
+
 		} else {
 			return null // Deck is empty
 		}
 	}
 
-	flop() {
+	flop(players) {
 		let communityCards = []
+		let burnCards = []
 
-		const burnCards = this.cards.pop()
+		burnCards.push(this.cards.pop())
 
 		for (let i = 1; i <= 3; i++) {
 			communityCards.push(this.cards.pop())
 		}
 
-        return  {communityCards, burnCards}
+		this.burnCards = burnCards
+		this.communityCards = communityCards
+        
+        this.checkHandVal(players)
+
 	}
+
+    
+
+	turn(players) {
+		this.burnCards.push(this.cards.pop())
+		this.communityCards.push(this.cards.pop())
+        this.checkHandVal(players)
+
+	}
+	river(players) {
+		this.burnCards.push(this.cards.pop())
+		this.communityCards.push(this.cards.pop())
+        this.checkHandVal(players)
+
+	}
+
+    checkHandVal(players){
+        for (let i = 0; i < NUM_PLAYERS; i++) {
+                
+            players[i].handValue = checkCombos(
+                players[i].hand,
+                this.communityCards
+            )
+        }
+    }
 }
 
-export const deck = new Deck()
-function createPlayers(NUM_PLAYERS) {
+export function createPlayers(NUM_PLAYERS) {
 	const players = []
-	// const playerCards = deck.playerCards
 
 	for (let i = 1; i <= NUM_PLAYERS; i++) {
 		const playerName = `Player ${i}`
-		const playerHand = deck.playerCards[i]
+		const playerHand = []
+		const handValue = null
 		const playerChips = 1000
 
-		const player = new Player(playerName, playerHand, playerChips)
+		const player = new Player(
+			playerName,
+			playerHand,
+			handValue,
+			playerChips
+		)
 		players.push(player)
 	}
 
 	return players
 }
-
-console.log(deck.burnCards, deck.communityCards)
-
-export const players = createPlayers(NUM_PLAYERS)
-
-
-
-
