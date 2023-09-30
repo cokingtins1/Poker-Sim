@@ -10,59 +10,60 @@
 		<title>Document</title>
 	</head>
 	<body>
-		<div class="table" data-players>
-			<img src="" alt="" />
-			<div class="communityCards">
+		<div data-table class="table">
+			<div data-communityCard>
 				<img
 					class="playerCard"
-					data-community-cards=""
-					src="./cards/10C.svg"
+					data-card0
+					src="./cards/Red_Back.svg"
 					alt=""
 				/>
 				<img
 					class="playerCard"
-					data-community-cards
-					src="./cards/10C.svg"
+					data-card1
+					src="./cards/Red_Back.svg"
 					alt=""
 				/>
 				<img
 					class="playerCard"
-					data-community-cards
-					src="./cards/10C.svg"
+					data-card2
+					src="./cards/Red_Back.svg"
 					alt=""
 				/>
 				<img
 					class="playerCard"
-					data-community-cards
-					src="./cards/10C.svg"
+					data-card3
+					src="./cards/Red_Back.svg"
 					alt=""
 				/>
 				<img
 					class="playerCard"
-					data-community-cards
-					src="./cards/10C.svg"
+					data-card4
+					src="./cards/Red_Back.svg"
 					alt=""
 				/>
 			</div>
 		</div>
 
+		<div class="table" data-players></div>
+
 		<button data-button-setup>Set Up Game</button>
 		<button data-button-flop>Flop</button>
 
-		<template id="mytemplate">
+		<template id="playerTemplate">
 			<div class="playerTemplate">
 				<div data-playerNum>Player 1</div>
 				<div data-playerHand>hand: JS, AS</div>
 				<div data-playerHandImg>
 					<img
 						class="playerCard"
-						data-card1
+						data-card0
 						src="./cards/10C.svg"
 						alt=""
 					/>
 					<img
 						class="playerCard"
-						data-card2
+						data-card1
 						src="./cards/10C.svg"
 						alt=""
 					/>

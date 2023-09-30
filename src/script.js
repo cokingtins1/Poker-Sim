@@ -4,28 +4,31 @@ import { renderCards } from "./renderCardImg.js"
 
 const setUpButton = document.querySelector("[data-button-setup]")
 const flopButton = document.querySelector("[data-button-flop]")
-const playerTemplate = document.getElementById("mytemplate")
+
+const tableDiv = document.querySelector("[data-table")
+
+const playerTemplate = document.getElementById("playerTemplate")
 const playerDiv = document.querySelector("[data-players]")
-const communityCards = document.querySelector("[data-community-cards]")
 
 setUpButton.addEventListener("click", () => {
 	for (let i = 0; i < NUM_PLAYERS; i++) {
 		const element = playerTemplate.content.cloneNode(true)
 
-		// const imageMap = getCardImage(players[i].hand)
-		// setValue("playerHandImg", null, { parent: element }, imageMap)
-
 		setValue("playerNum", players[i].name, { parent: element })
 		setValue("playerHand", players[i].hand, { parent: element })
 		setValue("playerChips", players[i].chips, { parent: element })
 
-		renderCards("playerHandImg", players[i].hand, { parent: element })
+		renderCards("playerHandImg", "card", players[i].hand, {
+			parent: element,
+		})
 
 		playerDiv.appendChild(element)
 	}
 })
 flopButton.addEventListener("click", () => {
-	communityCards.append(deck.communityCards)
+	renderCards("communityCard", "card", deck.communityCards, {
+		parent: tableDiv,
+	})
 })
 
 function setValue(selector, value, { parent = document } = {}) {
