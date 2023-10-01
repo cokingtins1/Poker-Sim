@@ -21,10 +21,12 @@ setUpButton.addEventListener("click", () => {
 	for (let i = 0; i < NUM_PLAYERS; i++) {
 		const element = playerTemplate.content.cloneNode(true)
 
-		setValue("playerNum", players[i].name, { parent: element })
-		setValue("playerHand", players[i].hand, { parent: element })
+		// Assign player number to the dataset property of each clone
+		const playerNum = element.querySelector("[data-playerNum]")
+		playerNum.dataset.playernum = i + 1 //Note this is snake-case (playernum not playerNum)
 
-		// setValue("playerHandValue", players[i].handValue, { parent: element })
+		setValue("playerName", players[i].name, { parent: element })
+		setValue("playerHand", players[i].hand, { parent: element })
 
 		setValue("playerChips", players[i].chips, { parent: element })
 
@@ -36,7 +38,6 @@ setUpButton.addEventListener("click", () => {
 	}
 
 	updateHandValue()
-	console.log(players.map((obj) => obj.handValue))
 })
 flopButton.addEventListener("click", () => {
 	deck.flop(players)
@@ -44,8 +45,6 @@ flopButton.addEventListener("click", () => {
 		parent: tableDiv,
 	})
 	updateHandValue()
-
-	console.log(players.map((obj) => obj.handValue))
 })
 
 turnButton.addEventListener("click", () => {
@@ -54,8 +53,6 @@ turnButton.addEventListener("click", () => {
 		parent: tableDiv,
 	})
 	updateHandValue()
-
-	console.log(players.map((obj) => obj.handValue))
 })
 
 riverButton.addEventListener("click", () => {
@@ -64,8 +61,6 @@ riverButton.addEventListener("click", () => {
 		parent: tableDiv,
 	})
 	updateHandValue()
-
-	console.log(players.map((obj) => obj.handValue))
 })
 
 function setValue(selector, value, { parent = document } = {}) {
@@ -73,12 +68,17 @@ function setValue(selector, value, { parent = document } = {}) {
 }
 
 function updateHandValue() {
-	players.forEach((player) => {
-		setValue("playerHandValue", player.handValue, {
-			parent: playerDiv,
-		})
+	const playerNumDiv = document.querySelectorAll("[data-playerNum]")
+
+	players.forEach((player, index) => {
+		const playerHandVal = playerNumDiv[index].querySelector(
+			"[data-playerHandValue]"
+		)
+		playerHandVal.textContent = player.handValue
 	})
 }
+
+
 
 // const communityCards = ["KD", "3H", "4H", "5H", "6H"]
 // const playerCards = ["7D", "JH"]
