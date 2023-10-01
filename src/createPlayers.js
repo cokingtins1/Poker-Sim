@@ -8,8 +8,8 @@ class Player {
 	constructor(name, hand, chips) {
 		this.name = name
 		this.hand = hand
-
-		this.handValue = checkCombos(hand, [])
+		this.handInfo = undefined
+		this.handValue = undefined
 		this.chips = chips
 	}
 }
@@ -67,8 +67,7 @@ export class Deck {
 				)
 			}
 
-            this.checkHandVal(players)
-
+			this.checkHandVal(players)
 		} else {
 			return null // Deck is empty
 		}
@@ -86,35 +85,28 @@ export class Deck {
 
 		this.burnCards = burnCards
 		this.communityCards = communityCards
-        
-        this.checkHandVal(players)
 
+		this.checkHandVal(players)
 	}
-
-    
 
 	turn(players) {
 		this.burnCards.push(this.cards.pop())
 		this.communityCards.push(this.cards.pop())
-        this.checkHandVal(players)
-
+		this.checkHandVal(players)
 	}
 	river(players) {
 		this.burnCards.push(this.cards.pop())
 		this.communityCards.push(this.cards.pop())
-        this.checkHandVal(players)
-
+		this.checkHandVal(players)
 	}
 
-    checkHandVal(players){
-        for (let i = 0; i < NUM_PLAYERS; i++) {
-                
-            players[i].handValue = checkCombos(
-                players[i].hand,
-                this.communityCards
-            )
-        }
-    }
+	checkHandVal(players) {
+		for (let i = 0; i < NUM_PLAYERS; i++) {
+			const result = checkCombos(players[i].hand, this.communityCards)
+			players[i].handValue = result.handName
+			players[i].handInfo = result.hand
+		}
+	}
 }
 
 export function createPlayers(NUM_PLAYERS) {
@@ -137,3 +129,4 @@ export function createPlayers(NUM_PLAYERS) {
 
 	return players
 }
+

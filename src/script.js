@@ -7,6 +7,7 @@ const turnButton = document.querySelector("[data-button-turn]")
 const riverButton = document.querySelector("[data-button-river]")
 
 const tableDiv = document.querySelector("[data-table")
+const winner = document.querySelector("[data-winner]")
 
 const playerTemplate = document.getElementById("playerTemplate")
 const playerDiv = document.querySelector("[data-players]")
@@ -36,6 +37,9 @@ setUpButton.addEventListener("click", () => {
 
 		playerDiv.appendChild(element)
 	}
+
+	determineWinner(players)
+	// console.log(players.map(obj => obj.handInfo))
 
 	updateHandValue()
 })
@@ -76,9 +80,29 @@ function updateHandValue() {
 		)
 		playerHandVal.textContent = player.handValue
 	})
+	determineWinner(players)
 }
 
+function determineWinner(players) {
+	let highestOrder = -Infinity
+	let highestOrderPlayers = []
 
+	// debugger
+	for (let player of players) {
+		if (player.handInfo.order && player.handInfo.order > highestOrder) {
+			highestOrder = player.handInfo.order
+			highestOrderPlayers = [player]
+		} else if (
+			player.handInfo.order &&
+			player.handInfo.order === highestOrder
+		) {
+			highestOrderPlayers.push(player)
+		}
+	}
+
+	console.log(highestOrderPlayers)
+	// winner.textContent = bestHand.name
+}
 
 // const communityCards = ["KD", "3H", "4H", "5H", "6H"]
 // const playerCards = ["7D", "JH"]

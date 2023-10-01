@@ -173,7 +173,14 @@ export default function checkCombos(playerHand, community = []) {
 
 	// return this for non testing
 
-	return HAND_MAP.get(hand.order)
+	const handResult = {
+		handName: HAND_MAP.get(hand.order),
+		hand: hand
+		
+	}
+
+	// return HAND_MAP.get(hand.order)
+	return handResult
 
 	// return this for testing
 	// return handRanks
