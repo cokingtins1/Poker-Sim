@@ -1,8 +1,5 @@
-
-
 // need to log the kicker - kicker is the card that is not involved with the hand.
 // Pair - card that is not the pair/three kind/four kind
-
 
 const HAND_MAP = new Map()
 addMapping(1, "High Card")
@@ -179,8 +176,7 @@ function checkCombos(playerHand, community = []) {
 
 	const handResult = {
 		handName: HAND_MAP.get(hand.order),
-		hand: hand
-
+		hand: hand,
 	}
 
 	// return HAND_MAP.get(hand.order)
@@ -224,8 +220,68 @@ function groupBy(array, func) {
 	}, {})
 }
 
+// Determine Winner -----------------------------------------------------
+function determineWinner(players) {
+	// Part will accumulate player(s) with the highst value hand type.
+	// Part 2 will accumulate plater(s) of the highest value hand type with the highest value
+	// Example, of three players with pairs (one has pair of 5, two has pair of 7s), Part 2 will return players with the 7s.
+	// Need to be able to play kicker... not yet implemented.
 
-const comCards = ["2H", "9C", "10H", "JD", "QS"]
-const playerCards = ["KS", "5D"]
+	let bestHandValue = 0
+	let winningPlayers = []
 
-// console.log(checkCombos(playerCards, comCards))
+	// Part 1
+	for (let player of players) {
+		if (player.handInfo.order && player.handInfo.order > bestHandValue) {
+			bestHandValue = player.handInfo.order
+			winningPlayers = [player]
+		} else if (
+			player.handInfo.order &&
+			player.handInfo.order === bestHandValue
+		) {
+			winningPlayers.push(player)
+		}
+	}
+
+	let bestChopValue = 0
+	let choppingPlayers = []
+
+	// Part 2
+	if (winningPlayers.length === 1) {
+		// winner.textContent = winningPlayers[0].name
+		return  winningPlayers[0].name
+	} else {
+		for (let player of winningPlayers) {
+			if (
+				player.handInfo.value &&
+				player.handInfo.value > bestChopValue
+			) {
+				bestChopValue = player.handInfo.value
+				choppingPlayers = [player]
+			} else if (
+				player.handInfo.value &&
+				player.handInfo.value === bestChopValue
+			) {
+				choppingPlayers.push(player)
+			}
+		}
+		if (choppingPlayers.length === 1) {
+			// winner.textContent = choppingPlayers[0].name
+			return choppingPlayers[0].name
+		} else {
+			// winner.textContent = `Chop between players`
+			return "Chop between players"
+		}
+	}
+
+    // ***
+    // if (choppingPlayers.length > 0) evaluate kicker 
+
+}
+
+
+
+module.exports = {
+	checkCombos,
+	determineWinner
+}

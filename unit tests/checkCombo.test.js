@@ -1,7 +1,7 @@
 // Will need to change the expect function since return of checkCombo was updated
 // const { parseCards, checkCombos, groupBy } = require("./src/script.js")
 
-import { checkCombos } from "./src/checkHand"
+import { checkCombos } from "../src/checkHand"
 
 describe("Check Poker Hands", () => {
 	const testCases = [
