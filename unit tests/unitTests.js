@@ -1,14 +1,23 @@
 // need to log the kicker - kicker is the card that is not involved with the hand.
 // Pair - card that is not the pair/three kind/four kind
 
-
 class Player {
-	constructor(name, hand, handInfo, handValue, playerHandVal, communityHandVal, chips) {
+	constructor(
+		name,
+		hand,
+		handInfo,
+		handValue,
+		playerHandVal,
+		communityHand,
+		communityHandVal,
+		chips
+	) {
 		this.name = name
 		this.hand = hand
 		this.handInfo = handInfo
 		this.handValue = handValue
 		this.playerHandVal = playerHandVal
+		this.communityHand = communityHand
 		this.communityHandVal = communityHandVal
 		this.chips = chips
 	}
@@ -31,7 +40,7 @@ function addMapping(values, hand) {
 }
 
 // add export default
-function checkCombos(playerHand, community = []) {
+function checkCombos(playerHand = [], community = []) {
 	if (!playerHand) return
 
 	const inputArray = [...playerHand, ...community]
@@ -40,7 +49,7 @@ function checkCombos(playerHand, community = []) {
 	const __playerHandVal = __playerHand.map((card) => card.value)
 	const __communityHand = parseCards(community)
 	const __communityHandVal = __communityHand.map((card) => card.value)
-	
+
 	const array = parseCards(inputArray)
 
 	const highCard = createRank() // Order 1
@@ -64,17 +73,28 @@ function checkCombos(playerHand, community = []) {
 
 	// Check for pair, trips, quads
 	let twoPairCombo = []
-
+	let falseTrip = {
+		count: 0,
+		tripOne: [],
+		tripTwo: [],
+		kicker: [],
+	}
 	for (const index of unique) {
 		if (groupedByValue[index].length === 2) {
-			pair.value = [index]
+			pair.value = index
 			pair.has = true
 			pair.order = 2
 			twoPairCombo.push(index)
 		} else if (groupedByValue[index].length === 3) {
-			trip.value = [index]
+			trip.value = index
 			trip.has = true
 			trip.order = 4
+			falseTrip.count += 1
+			falseTrip.count === 1 ? (falseTrip.tripOne = index) : []
+			falseTrip.count === 2 ? (falseTrip.tripTwo = index) : []
+			falseTrip.count === 2
+				? (falseTrip.kicker = [falseTrip.tripOne, falseTrip.tripTwo])
+				: []
 		} else if (groupedByValue[index].length === 4) {
 			quad.value = [index]
 			quad.has = true
@@ -156,9 +176,15 @@ function checkCombos(playerHand, community = []) {
 	}
 
 	// Check for Full House
+	if (falseTrip.count === 2) {
+		fullHouse.has = true
+		fullHouse.value = getMaxVal(falseTrip.kicker)
+		fullHouse.order = 7
+	}
+
 	if (trip.has === true && pair.has === true) {
 		fullHouse.has = true
-		fullHouse.value = [trip.value]
+		fullHouse.value = trip.value
 		fullHouse.order = 7
 	}
 
@@ -197,8 +223,8 @@ function checkCombos(playerHand, community = []) {
 	const handResult = {
 		handName: HAND_MAP.get(hand.order),
 		hand: hand,
-		playerHandVal: __playerHandVal,
-		communityHandVal: __communityHandVal
+		playerHandVal: __playerHandVal, // array of values for kicker
+		communityHandVal: __communityHandVal, // array of values for kicker
 	}
 
 	// return HAND_MAP.get(hand.order)
@@ -249,10 +275,12 @@ function determineWinner(players) {
 	// Example, of three players with pairs (one has pair of 5, two has pair of 7s), Part 2 will return players with the 7s.
 	// Need to be able to play kicker... not yet implemented.
 
-	const communityCardsVal = players[0].communityHandVal
+	const communityCards = players[0].communityHand
+	const communityCardsVal = players[0].communityHandVal //array of community values
 
 	let bestHandValue = 0
 	let winningPlayers = []
+	console.log(players)
 
 	// Part 1 - Determine winner with best hand value
 	for (let player of players) {
@@ -266,6 +294,8 @@ function determineWinner(players) {
 			winningPlayers.push(player)
 		}
 	}
+
+	const winningPlayerNames = winningPlayers.map((player) => player.name)
 
 	// Part 2 - If tie, accumulate players who tie
 	let bestChopValue = 0
@@ -289,70 +319,140 @@ function determineWinner(players) {
 				choppingPlayers.push(player)
 			}
 		}
+	}
 
-		// Check if player gets counterfeited (both players share same value on turn or river)
-		if(choppingPlayers.length > 1 && communityCardsVal.indexOf(bestChopValue) !== -1 ){
-			const choppingPlayerNames = choppingPlayers.map(player => player.name)
-			return `Chop between ${choppingPlayerNames}`
-		}
+	// Create fake player: 'Community Player' to eval hand against the players
+	// class CommunityPlayer extends Player {
+	// 	constructor(communityHand) {
+	// 		super(null, null, null, null, null, communityHand, null, null)
+	// 		this.handInfo = checkCombos(communityHand).hand
+	// 		this.name = "Community Player"
+	// 	}
+	// }
 
-		console.log("choppingPlayers:", choppingPlayers)
-		console.log("choppingValue:", bestChopValue)
+	// const communityClassInstance = new CommunityPlayer(communityCards)
+	// const allHands = [...winningPlayers, communityClassInstance]
+	// const sameHandOrder = allHands.every(
+	// 	(player) =>
+	// 		player.handInfo &&
+	// 		player.handInfo.order === allHands[0].handInfo.order
+	// )
+	// console.log(allHands)
+	// if (sameHandOrder) {
+	// 	const kickerPlaysVal = allHands[0].handInfo.order
+	// 	if ([5, 6, 7, 9, 10].includes(kickerPlaysVal)) {
+	// 		//kickers only plays below straight - plays on quads
+	// 		return `Chop between ${winningPlayerNames}`
+	// 	}
+	// }
 
-		// Part 3 - determine winner with best kicker
-		let bestKickerValue = 0
-		let playerBestKicker = []
-		if (choppingPlayers.length === 1) {
-			return choppingPlayers[0].name
-		}
-		
-		
-		else if (choppingPlayers.length > 0) {
-			for (let player of choppingPlayers) {
-				if (
-					player.hand &&
-					getMaxVal(player.playerHandVal) > bestKickerValue
-				) {
-					bestKickerValue = getMaxVal(player.playerHandVal)
-					playerBestKicker = [player]
-				} else if (
-					player.hand &&
-					getMaxVal(player.playerHandVal) === bestKickerValue
-				) {
-					playerBestKicker.push(player)
-				}
+	// class CommunityPlayer extends Player {
+	// 	constructor(communityHand) {
+	// 		super(null, null, null, null, null, communityHand, null, null)
+	// 		this.handInfo = checkCombos(communityHand).hand
+	// 		this.name = "Community Player"
+	// 	}
+	// }
+
+	// const communityClassInstance = new CommunityPlayer(communityCards)
+	// const tyingPlayerOrder = winningPlayers[0].handInfo.order
+	// const allHands = [...winningPlayers, communityClassInstance]
+	// if(communityClassInstance.handInfo.order > tyingPlayerOrder){
+	// 	return `Chop between ${winningPlayerNames}`
+	// }
+	// // console.log(tyingPlayerOrder)
+	// console.log(allHands)
+	// // if (sameHandOrder) {
+	// // 	const kickerPlaysVal = allHands[0].handInfo.order
+	// // 	if (kickerPlaysVal > 5) { //kickers only plays below straight
+	// // 		return `Chop between ${winningPlayerNames}`
+	// // 	}
+	// // }
+
+	const choppingPlayerNames = choppingPlayers.map((player) => player.name)
+
+	// Check if player gets counterfeited (both players share same value on turn or river)
+	if (
+		choppingPlayers.length > 1 &&
+		communityCardsVal.indexOf(bestChopValue) === -1
+	) {
+		return `Chop between ${choppingPlayerNames}`
+	}
+
+	// Part 3 - determine winner with best kicker
+	let bestKickerValue = 0
+	let playerBestKicker = []
+	if (choppingPlayers.length === 1) {
+		return choppingPlayers[0].name
+	} else if (choppingPlayers.length > 0) {
+		for (let player of choppingPlayers) {
+			if (
+				player.hand &&
+				getMaxVal(player.playerHandVal) > bestKickerValue
+			) {
+				bestKickerValue = getMaxVal(player.playerHandVal)
+				playerBestKicker = [player]
+			} else if (
+				player.hand &&
+				getMaxVal(player.playerHandVal) === bestKickerValue
+			) {
+				playerBestKicker.push(player)
 			}
 		}
-		if (playerBestKicker.length > 1) {
-			return "Multiple players with best kicker"
-		} else {
-			return playerBestKicker[0].name
-		}
-		// winner.textContent = choppingPlayers[0].name
-		console.log("playerBestKicker:", playerBestKicker)
-		// return playerBestKicker[0].name
 	}
-	function getMaxVal(arr) {
-		if (arr.length === 1) {
-			return arr[0]
-		}
+	if (playerBestKicker.length > 1) {
+		return `Chop between ${choppingPlayerNames}`
+	} else {
+		return playerBestKicker[0].name
+	}
+	// winner.textContent = choppingPlayers[0].name
+	// return playerBestKicker[0].name
+}
+
+function getMaxVal(input) {
+	if (typeof input === "number") {
+		const arr = [input]
+		return arr[0]
+	} else {
+		const arr = input
 		return Math.max(...arr)
 	}
 }
-
-// ***
-// if (choppingPlayers.length > 0) evaluate kicker
 
 // Console Code
 
 function testConsole() {
 	const testArray = [
+		// {
+		// 	name: "Straight Flush",
+		// 	communityCards: ["7D", "8D", "9D", "10D", "JD"],
+		// 	players: [
+		// 		["QD", "KD"],
+		// 		["5D", "6D"],
+		// 	],
+		// },
+		// {
+		// 	name: "Comm Quads with Kicker",
+		// 	communityCards: ["JC", "JD", "JH", "2C", "JS"],
+		// 	players: [
+		// 		["2D", "3S"],
+		// 		["5D", "6D"],
+		// 	],
+		// },
+		// {
+		// 	name: "Comm Trips with Kicker ",
+		// 	communityCards: ["2C", "3C", "JD", "JC", "JH"],
+		// 	players: [
+		// 		["6D", "7D"],
+		// 		["4D", "5D"],
+		// 	],
+		// },
 		{
-			name: "Chop - Pair w Counterfeited King",
-			communityCards: ["2S", "7D", "JC", "KD", "KD"],
+			name: "better FH ",
+			communityCards: ["10D", "10H", "10S", "JH", "JS"],
 			players: [
-				["2H", "7H"],
-				["3C", "7S"],
+				["3S", "JC"],
+				["4D", "QD"],
 			],
 		},
 	]
@@ -369,6 +469,7 @@ function testConsole() {
 			const handInfo = result.hand
 			const handValue = result.handName
 			const playerHandVal = result.playerHandVal
+			const communityHand = testcase.communityCards
 			const communityHandVal = result.communityHandVal
 			const playerChips = 1000
 
@@ -378,6 +479,7 @@ function testConsole() {
 				handInfo,
 				handValue,
 				playerHandVal,
+				communityHand,
 				communityHandVal,
 				playerChips
 			)

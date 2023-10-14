@@ -5,12 +5,28 @@ const { checkCombos, determineWinner } = require("./unitTests.js")
 
 // console.log(checkCombos(playerCards, comCards))
 
+// 1. If tie, collect players who have same order
+// 2. Check if 'Community Player' has a hand that is higher than tying players
+// 	2a. If true ---> CHOP
+
 class Player {
-	constructor(name, hand, handInfo, handValue, chips) {
+	constructor(
+		name,
+		hand,
+		handInfo,
+		handValue,
+		playerHandVal,
+		communityHand,
+		communityHandVal,
+		chips
+	) {
 		this.name = name
 		this.hand = hand
 		this.handInfo = handInfo
 		this.handValue = handValue
+		this.playerHandVal = playerHandVal
+		this.communityHand = communityHand
+		this.communityHandVal = communityHandVal
 		this.chips = chips
 	}
 }
@@ -22,6 +38,7 @@ class Player {
 
 describe("Check Winner", () => {
 	const expectedWinner = "Player 1"
+	const chopMessage = "Chop between Player 1,Player 2"
 	const testArray = [
 		{
 			name: "High Card vs High Card",
@@ -65,10 +82,10 @@ describe("Check Winner", () => {
 		},
 		{
 			name: "Straigh w Ace",
-			communityCards: ["9C", "10C", "JC", "QH"],
+			communityCards: ["8D", "9C", "10C", "JC", "QH"],
 			players: [
-				["10D", "KH"],
-				["7D", "8D"],
+				["KH", "AS"],
+				["6C", "7D"],
 			],
 		},
 		{
@@ -142,14 +159,50 @@ describe("Check Winner", () => {
 				["2H", "7H"],
 				["3C", "7S"],
 			],
+			expect: chopMessage,
 		},
 		{
-			name: "Chop - 2",
+			name: "Chop - Counterfeited Straight",
+			communityCards: ["10S", "JD", "QH", "KD", "AS"],
+			players: [
+				["JS", "AH"],
+				["JC", "AC"],
+			],
+
+			expect: chopMessage,
+		},
+		{
+			name: "Chop - Counterfeited Flush",
+			communityCards: ["5H", "7H", "9H", "10H", "QH"],
+			players: [
+				["2H", "3H"],
+				["KD", "KC"],
+			],
+
+			expect: chopMessage,
+		},
+		{
+			name: "Higher Kicker ",
 			communityCards: ["4H", "8C", "KC", "AH", "AS"],
 			players: [
 				["2D", "10H"],
 				["2S", "9D"],
-                
+			],
+		},
+		{
+			name: "Comm Trips with Kicker ",
+			communityCards: ["2C", "3C", "JD", "JC", "JH"],
+			players: [
+				["6D", "7D"],
+				["4D", "5D"],
+			],
+		},
+		{
+			name: "better FH ",
+			communityCards: ["10D", "10H", "10S", "JH", "JS"],
+			players: [
+				["3S", "JC"],
+				["4D", "QD"],
 			],
 		},
 	]
@@ -167,6 +220,9 @@ describe("Check Winner", () => {
 				const playerHand = testcase.players[i]
 				const handInfo = result.hand
 				const handValue = result.handName
+				const playerHandVal = result.playerHandVal
+				const communityHand = testcase.communityCards
+				const communityHandVal = result.communityHandVal
 				const playerChips = 1000
 
 				const player = new Player(
@@ -174,12 +230,17 @@ describe("Check Winner", () => {
 					playerHand,
 					handInfo,
 					handValue,
+					playerHandVal,
+					communityHand,
+					communityHandVal,
 					playerChips
 				)
 				players.push(player)
 			}
 			const winner = determineWinner(players)
-			expect(winner).toBe(expectedWinner)
+			expect(winner).toBe(
+				testcase.expect ? testcase.expect : expectedWinner
+			)
 		})
 	})
 })
