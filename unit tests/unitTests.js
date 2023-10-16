@@ -89,9 +89,11 @@ function checkCombos(playerHand = [], community = []) {
 			trip.value = index
 			trip.has = true
 			trip.order = 4
+			twoPairCombo.push(index)
 			falseTrip.count += 1
 			falseTrip.count === 1 ? (falseTrip.tripOne = index) : []
 			falseTrip.count === 2 ? (falseTrip.tripTwo = index) : []
+
 			falseTrip.count === 2
 				? (falseTrip.kicker = [falseTrip.tripOne, falseTrip.tripTwo])
 				: []
@@ -179,13 +181,23 @@ function checkCombos(playerHand = [], community = []) {
 	// Check for Full House
 	if (falseTrip.count === 2) {
 		fullHouse.has = true
-		fullHouse.value = Math.max(falseTrip.kicker)
+		fullHouse.value = [
+			Math.max(...falseTrip.kicker),
+			Math.min(...falseTrip.kicker),
+		] //higher of the trip
 		fullHouse.order = 7
 	}
 
 	if (trip.has === true && pair.has === true) {
 		fullHouse.has = true
-		fullHouse.value = trip.value
+		fullHouse.value = [
+			trip.value,
+			twoPair.has
+				? Math.max(...twoPair.value) !== trip.value
+					? Math.max(...twoPair.value)
+					: Math.min(...twoPair.value)
+				: undefined,
+		]
 		fullHouse.order = 7
 	}
 
@@ -333,7 +345,7 @@ function determineWinner(players) {
 				// hand is high card, P, 2P, 3, 4
 				return evalKicker(winningPlayers, true)
 			} else if (kickerPlaysVal === 7) {
-				handleFullHouse()
+				handleFullHouse(winningPlayers)
 			}
 		} else {
 			if ([5, 6, 9, 10].includes(kickerPlaysVal)) {
@@ -343,12 +355,39 @@ function determineWinner(players) {
 				// hand is high card, P, 2P, 3, 4
 				return evalKicker(winningPlayers, true)
 			} else if (kickerPlaysVal === 7) {
-				handleFullHouse()
+				handleFullHouse(winningPlayers)
 			}
 		}
 	}
 
-	function handleFullHouse() {}
+	function handleFullHouse(players) {
+		let highestTrip = -1
+		let highestPair = -1
+		let playerBestKicker = []
+
+		for (let player of players) {
+			let currentTripValue
+			let currentPairValue
+
+			currentTripValue = player.handInfo.value[0]
+			currentPairValue = player.handInfo.value[1]
+
+			if (currentTripValue > highestTrip) {
+				highestTrip = currentTripValue
+				highestPair = currentPairValue
+				playerBestKicker = [player]
+			}
+
+			if (currentTripValue === highestTrip) {
+				highestPair = currentPairValue
+				playerBestKicker = [player]
+			}
+
+			// else if (currentValue === bestKickerValue) {
+			// 	playerBestKicker.push(player)
+			// }
+		}
+	}
 
 	function evalKicker(players, kicker = false) {
 		let bestKickerValue = -1
@@ -509,11 +548,11 @@ function determineWinner(players) {
 function testConsole() {
 	const testArray = [
 		{
-			name: "Full House",
-			communityCards: ["3D", "3C", "3H", "5S", "AC"],
+			name: "better FH ",
+			communityCards: ["3D", "QD", "3H", "5D", "QS"],
 			players: [
-				["JC", "JH"],
-				["8C", "8H"],
+				["8C", "QH"],
+				["3C", "5H"],
 			],
 		},
 	]
