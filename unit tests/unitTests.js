@@ -127,7 +127,7 @@ function checkCombos(playerHand = [], community = []) {
 				straightEnd = straightArray[i + 4]
 
 				straight.has = true
-				straight.value = [straightStart, straightEnd] // log high card of straight
+				straight.value = straightEnd // log high card of straight
 				straight.order = 5
 			}
 		}
@@ -149,7 +149,7 @@ function checkCombos(playerHand = [], community = []) {
 
 			if (Math.max(...Object.values(flushCount)) >= 5) {
 				straightFlush.has = true
-				straightFlush.value = [straightStart, straightEnd]
+				straightFlush.value = straightEnd
 				straightFlush.order = 9
 			}
 
@@ -158,7 +158,7 @@ function checkCombos(playerHand = [], community = []) {
 				straightEnd === 13
 			) {
 				royalFlush.has = true
-				royalFlush.value = [straightStart, straightEnd]
+				royalFlush.value = straightEnd
 				royalFlush.order = 10
 			}
 		}
@@ -167,10 +167,11 @@ function checkCombos(playerHand = [], community = []) {
 	// Check for Flush
 
 	const keys = Object.keys(groupedBySuit).map(Number)
+
 	for (const key of keys) {
 		if (groupedBySuit[key].length >= 5) {
 			flush.has = true
-			flush.value = [Math.max(...__playerHandVal)]
+			flush.value = groupedBySuit[key][4].value
 			flush.order = 6
 		}
 	}
@@ -178,7 +179,7 @@ function checkCombos(playerHand = [], community = []) {
 	// Check for Full House
 	if (falseTrip.count === 2) {
 		fullHouse.has = true
-		fullHouse.value = getMaxVal(falseTrip.kicker)
+		fullHouse.value = Math.max(falseTrip.kicker)
 		fullHouse.order = 7
 	}
 
@@ -298,51 +299,147 @@ function determineWinner(players) {
 	const winningPlayerNames = winningPlayers.map((player) => player.name)
 
 	// Part 2 - If tie, accumulate players who tie
-	let bestChopValue = 0
-	let choppingPlayers = []
+
+	// Create fake player: 'Community Player' to eval hand against the players
+	class CommunityPlayer extends Player {
+		constructor(communityHand) {
+			super(null, null, null, null, null, communityHand, null, null)
+			this.handInfo = checkCombos(communityHand).hand
+			this.handValue = checkCombos(communityHand).handName
+			this.name = "Community Player"
+			this.playerHandVal = checkCombos(communityHand).playerHandVal
+		}
+	}
+
+	const communityClassInstance = new CommunityPlayer(communityCards)
+	const allHands = [...winningPlayers, communityClassInstance]
+	console.log(allHands)
+	const sameHandOrder = allHands.every(
+		(player) =>
+			player.handInfo &&
+			player.handInfo.order === allHands[0].handInfo.order
+	)
 
 	if (winningPlayers.length === 1) {
 		// winner.textContent = winningPlayers[0].name
 		return winningPlayers[0].name
 	} else {
-		for (let player of winningPlayers) {
-			if (
-				player.handInfo.value &&
-				getMaxVal(player.handInfo.value) > bestChopValue
-			) {
-				bestChopValue = getMaxVal(player.handInfo.value)
-				choppingPlayers = [player]
-			} else if (
-				player.handInfo.value &&
-				getMaxVal(player.handInfo.value) === bestChopValue
-			) {
-				choppingPlayers.push(player)
+		const kickerPlaysVal = allHands[0].handInfo.order
+		if (sameHandOrder) {
+			if ([5, 6, 9, 10].includes(kickerPlaysVal)) {
+				// hand is straight, flush, SF, RF or full house
+				return evalKicker(allHands)
+			} else if ([1, 2, 3, 4, 8].includes(kickerPlaysVal)) {
+				// hand is high card, P, 2P, 3, 4
+				return evalKicker(winningPlayers, true)
+			} else if (kickerPlaysVal === 7) {
+				handleFullHouse()
+			}
+		} else {
+			if ([5, 6, 9, 10].includes(kickerPlaysVal)) {
+				// hand is straight, flush, SF, RF or full house
+				return evalKicker(winningPlayers)
+			} else if ([1, 2, 3, 4, 8].includes(kickerPlaysVal)) {
+				// hand is high card, P, 2P, 3, 4
+				return evalKicker(winningPlayers, true)
+			} else if (kickerPlaysVal === 7) {
+				handleFullHouse()
 			}
 		}
 	}
 
-	// Create fake player: 'Community Player' to eval hand against the players
-	// class CommunityPlayer extends Player {
-	// 	constructor(communityHand) {
-	// 		super(null, null, null, null, null, communityHand, null, null)
-	// 		this.handInfo = checkCombos(communityHand).hand
-	// 		this.name = "Community Player"
-	// 	}
-	// }
+	function handleFullHouse() {}
 
-	// const communityClassInstance = new CommunityPlayer(communityCards)
-	// const allHands = [...winningPlayers, communityClassInstance]
-	// const sameHandOrder = allHands.every(
-	// 	(player) =>
-	// 		player.handInfo &&
-	// 		player.handInfo.order === allHands[0].handInfo.order
-	// )
-	// console.log(allHands)
-	// if (sameHandOrder) {
-	// 	const kickerPlaysVal = allHands[0].handInfo.order
-	// 	if ([5, 6, 7, 9, 10].includes(kickerPlaysVal)) {
-	// 		//kickers only plays below straight - plays on quads
-	// 		return `Chop between ${winningPlayerNames}`
+	function evalKicker(players, kicker = false) {
+		let bestKickerValue = -1
+		let playerBestKicker = []
+
+		for (let player of players) {
+			let currentValue
+
+			if (kicker) {
+				currentValue = Math.max(...player.playerHandVal)
+			} else {
+				currentValue = player.handInfo.value
+			}
+
+			if (currentValue > bestKickerValue) {
+				bestKickerValue = currentValue
+				playerBestKicker = [player]
+			} else if (currentValue === bestKickerValue) {
+				playerBestKicker.push(player)
+			}
+		}
+		// if  playerBestKicker includes Community Player, get rid of community player
+
+		if (
+			playerBestKicker.length > 1 &&
+			playerBestKicker.some((obj) => obj.name === "Community Player")
+		) {
+			players = players.filter((obj) => obj.name !== "Community Player")
+			const choppingPlayerNames = getNames(players)
+			return `Chop between ${choppingPlayerNames}`
+		} else if (
+			playerBestKicker.length > 1 &&
+			playerBestKicker.some((obj) => obj.name !== "Community Player")
+		) {
+			const choppingPlayerNames = getNames(playerBestKicker)
+			return `Chop between ${choppingPlayerNames}`
+		} else {
+			return playerBestKicker[0].name
+		}
+	}
+
+	function getNames(names) {
+		return names.map((player) => player.name)
+	}
+	// 	for (let player of winningPlayers) {
+	// 		if (
+	// 			[1, 2, 3, 4, 8].includes(player.handInfo.order) &&
+	// 			getMaxVal(player.handInfo.value) > bestChopValue
+	// 			// player.handInfo.value &&
+	// 			// getMaxVal(player.handInfo.value) > bestChopValue
+	// 		) {
+	// 			bestChopValue = getMaxVal(player.handInfo.value)
+	// 			choppingPlayers = [player]
+	// 		} else if (
+	// 			[1, 2, 3, 4, 8].includes(player.handInfo.order) &&
+	// 			getMaxVal(player.handInfo.value) === bestChopValue
+	// 			// player.handInfo.value &&
+	// 			// getMaxVal(player.handInfo.value) === bestChopValue
+	// 		) {
+	// 			choppingPlayers.push(player)
+	// 		}
+	// 	}
+	// 	// Do something different to eval higher flush, straigh, SF, RF
+	// 	for (let player of winningPlayers) {
+	// 		const choppingPlayerNames = choppingPlayers.map(
+	// 			(player) => player.name
+	// 		)
+	// 		if ([5, 9, 10].includes(player.handInfo.order)) {
+	// 			let higherStraight = -1
+	// 			if (player.handInfo.value[1] > higherStraight) {
+	// 				higherStraight = player.handInfo.value[1]
+	// 				choppingPlayers = [player]
+	// 			} else if (player.handInfo.value[1] === higherStraight) {
+	// 				return `Chop between ${choppingPlayerNames}`
+	// 			}
+	// 		}
+	// 		// if (
+	// 		// 	[5, 6, 9, 10].includes(player.handInfo.order) &&
+	// 		// 	getMaxVal(player.handInfo.value) > bestChopValue
+
+	// 		// ) {
+	// 		// 	bestChopValue = getMaxVal(player.handInfo.value)
+	// 		// 	choppingPlayers = [player]
+	// 		// } else if (
+	// 		// 	[5, 6, 9, 10].includes(player.handInfo.order) &&
+	// 		// 	getMaxVal(player.handInfo.value) === bestChopValue
+	// 		// 	// player.handInfo.value &&
+	// 		// 	// getMaxVal(player.handInfo.value) === bestChopValue
+	// 		// ) {
+	// 		// 	choppingPlayers.push(player)
+	// 		// }
 	// 	}
 	// }
 
@@ -369,90 +466,54 @@ function determineWinner(players) {
 	// // 	}
 	// // }
 
-	const choppingPlayerNames = choppingPlayers.map((player) => player.name)
-
 	// Check if player gets counterfeited (both players share same value on turn or river)
-	if (
-		choppingPlayers.length > 1 &&
-		communityCardsVal.indexOf(bestChopValue) === -1
-	) {
-		return `Chop between ${choppingPlayerNames}`
-	}
+	// if (
+	// 	choppingPlayers.length > 1 &&
+	// 	communityCardsVal.indexOf(bestChopValue) === -1
+	// ) {
+	// 	return `Chop between ${choppingPlayerNames}`
+	// }
 
-	// Part 3 - determine winner with best kicker
-	let bestKickerValue = 0
-	let playerBestKicker = []
-	if (choppingPlayers.length === 1) {
-		return choppingPlayers[0].name
-	} else if (choppingPlayers.length > 0) {
-		for (let player of choppingPlayers) {
-			if (
-				player.hand &&
-				getMaxVal(player.playerHandVal) > bestKickerValue
-			) {
-				bestKickerValue = getMaxVal(player.playerHandVal)
-				playerBestKicker = [player]
-			} else if (
-				player.hand &&
-				getMaxVal(player.playerHandVal) === bestKickerValue
-			) {
-				playerBestKicker.push(player)
-			}
-		}
-	}
-	if (playerBestKicker.length > 1) {
-		return `Chop between ${choppingPlayerNames}`
-	} else {
-		return playerBestKicker[0].name
-	}
-	// winner.textContent = choppingPlayers[0].name
-	// return playerBestKicker[0].name
-}
-
-function getMaxVal(input) {
-	if (typeof input === "number") {
-		const arr = [input]
-		return arr[0]
-	} else {
-		const arr = input
-		return Math.max(...arr)
-	}
+	// // Part 3 - determine winner with best kicker
+	// let bestKickerValue = 0
+	// let playerBestKicker = []
+	// if (choppingPlayers.length === 1) {
+	// 	return choppingPlayers[0].name
+	// } else if (choppingPlayers.length > 0) {
+	// 	for (let player of choppingPlayers) {
+	// 		if (
+	// 			player.hand &&
+	// 			getMaxVal(player.playerHandVal) > bestKickerValue
+	// 		) {
+	// 			bestKickerValue = getMaxVal(player.playerHandVal)
+	// 			playerBestKicker = [player]
+	// 		} else if (
+	// 			player.hand &&
+	// 			getMaxVal(player.playerHandVal) === bestKickerValue
+	// 		) {
+	// 			playerBestKicker.push(player)
+	// 		}
+	// 	}
+	// }
+	// if (playerBestKicker.length > 1) {
+	// 	return `Chop between ${choppingPlayerNames}`
+	// } else {
+	// 	return playerBestKicker[0].name
+	// }
+	// // winner.textContent = choppingPlayers[0].name
+	// // return playerBestKicker[0].name
 }
 
 // Console Code
 
 function testConsole() {
 	const testArray = [
-		// {
-		// 	name: "Straight Flush",
-		// 	communityCards: ["7D", "8D", "9D", "10D", "JD"],
-		// 	players: [
-		// 		["QD", "KD"],
-		// 		["5D", "6D"],
-		// 	],
-		// },
-		// {
-		// 	name: "Comm Quads with Kicker",
-		// 	communityCards: ["JC", "JD", "JH", "2C", "JS"],
-		// 	players: [
-		// 		["2D", "3S"],
-		// 		["5D", "6D"],
-		// 	],
-		// },
-		// {
-		// 	name: "Comm Trips with Kicker ",
-		// 	communityCards: ["2C", "3C", "JD", "JC", "JH"],
-		// 	players: [
-		// 		["6D", "7D"],
-		// 		["4D", "5D"],
-		// 	],
-		// },
 		{
-			name: "better FH ",
-			communityCards: ["10D", "10H", "10S", "JH", "JS"],
+			name: "Full House",
+			communityCards: ["3D", "3C", "3H", "5S", "AC"],
 			players: [
-				["3S", "JC"],
-				["4D", "QD"],
+				["JC", "JH"],
+				["8C", "8H"],
 			],
 		},
 	]

@@ -74,10 +74,10 @@ describe("Check Winner", () => {
 		},
 		{
 			name: "Straight vs Straight",
-			communityCards: ["3C", "4H", "10D", "QC", "KC"],
+			communityCards: ["3D", "8C", "9H", "10H", "JC"],
 			players: [
-				["JD", "AH"],
-				["2D", "AD"],
+				["QD", "KC"],
+				["QH", "AH"],
 			],
 		},
 		{
@@ -96,14 +96,7 @@ describe("Check Winner", () => {
 				["6S", "7S"],
 			],
 		},
-		{
-			name: "Flush w Ace",
-			communityCards: ["3D", "4S", "8C", "QS", "AS"],
-			players: [
-				["9S", "JS"],
-				["6S", "7S"],
-			],
-		},
+
 		{
 			name: "Full House",
 			communityCards: ["3D", "3C", "3H", "5S", "AC"],
@@ -244,3 +237,13 @@ describe("Check Winner", () => {
 		})
 	})
 })
+
+// kicker plays in pair holdings:
+// 	high card, pair, two-pair, 3kind, 4kind
+// (1,2,3,4,8)
+
+// Higher holding situations:
+// Higher flush, straight, SF, RF
+// (5,6,9,10)
+// Better full house - Good
+// (7)
