@@ -1,5 +1,6 @@
 import { createPlayers, Deck, NUM_PLAYERS } from "./createPlayers.js"
 import { renderCards } from "./renderCardImg.js"
+import { determineWinner } from "./checkHand.js"
 
 const setUpButton = document.querySelector("[data-button-setup]")
 const flopButton = document.querySelector("[data-button-flop]")
@@ -79,63 +80,12 @@ function updateHandValue() {
 		)
 		playerHandVal.textContent = player.handValue
 	})
-	determineWinner(players)
+
+	
+	const finalResult = determineWinner(players)
+	winner.textContent = `${finalResult} is the winner`
 }
 
-function determineWinner(players) {
-
-	// Part will accumulate player(s) with the highst value hand type.
-	// Part 2 will accumulate plater(s) of the highest value hand type with the highest value
-	// Example, of three players with pairs (one has pair of 5, two has pair of 7s), Part 2 will return players with the 7s.
-	// Need to be able to play kicker... not yet implemented. 
-
-	let bestHandValue = 0
-	let winningPlayers = []
-
-	// Part 1
-	for (let player of players) {
-		if (player.handInfo.order && player.handInfo.order > bestHandValue) {
-			bestHandValue = player.handInfo.order
-			winningPlayers = [player]
-		} else if (
-			player.handInfo.order &&
-			player.handInfo.order === bestHandValue
-		) {
-			winningPlayers.push(player)
-		}
-	}
-
-	let bestChopValue = 0
-	let choppingPlayers = []
-
-	// Part 2
-	if (winningPlayers.length === 1) {
-		winner.textContent = winningPlayers[0].name
-	} else {
-		for (let player of winningPlayers) {
-			if (
-				player.handInfo.value &&
-				player.handInfo.value > bestChopValue
-			) {
-				bestChopValue = player.handInfo.value
-				choppingPlayers = [player]
-			} else if (
-				player.handInfo.value &&
-				player.handInfo.value === bestChopValue
-			) {
-				choppingPlayers.push(player)
-			}
-		}
-		if (choppingPlayers.length === 1) {
-			winner.textContent = choppingPlayers[0].name
-		} else {
-			winner.textContent = `Chop between players`
-		}
-	}
-
-	console.log("winning players:", winningPlayers)
-	console.log("chopping players:", choppingPlayers)
-}
 
 // const communityCards = ["KD", "3H", "4H", "5H", "6H"]
 // const playerCards = ["7D", "JH"]

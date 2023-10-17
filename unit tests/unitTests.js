@@ -284,17 +284,11 @@ function groupBy(array, func) {
 
 // Determine Winner -----------------------------------------------------
 function determineWinner(players) {
-	// Part 1 will accumulate player(s) with the highst value hand type.
-	// Part 2 will accumulate player(s) of the highest value hand type with the highest value
-	// Example, of three players with pairs (one has pair of 5, two has pair of 7s), Part 2 will return players with the 7s.
-	// Need to be able to play kicker... not yet implemented.
 
 	const communityCards = players[0].communityHand
-	const communityCardsVal = players[0].communityHandVal //array of community values
 
 	let bestHandValue = 0
 	let winningPlayers = []
-	console.log(players)
 
 	// Part 1 - Determine winner with best hand value
 	for (let player of players) {
@@ -308,8 +302,6 @@ function determineWinner(players) {
 			winningPlayers.push(player)
 		}
 	}
-
-	const winningPlayerNames = winningPlayers.map((player) => player.name)
 
 	// Part 2 - If tie, accumulate players who tie
 
@@ -326,7 +318,7 @@ function determineWinner(players) {
 
 	const communityClassInstance = new CommunityPlayer(communityCards)
 	const allHands = [...winningPlayers, communityClassInstance]
-	console.log(allHands)
+	const kickerPlaysVal = allHands[0].handInfo.order
 	const sameHandOrder = allHands.every(
 		(player) =>
 			player.handInfo &&
@@ -336,8 +328,6 @@ function determineWinner(players) {
 	if (winningPlayers.length === 1) {
 		return winningPlayers[0].name
 	}
-
-	const kickerPlaysVal = allHands[0].handInfo.order
 
 	if ([5, 6, 9, 10].includes(kickerPlaysVal)) {
 		// hand is straight, flush, SF, RF or full house
@@ -370,7 +360,7 @@ function determineWinner(players) {
 					return maxObj
 				}
 			},
-			{ handInfo: { value: [-Infinity, -1] } }
+			{ handInfo: { value: [-Infinity, -Infinity] } }
 		)
 
 		if (tripsEqaulPlayers.length > 1) {
@@ -418,7 +408,6 @@ function determineWinner(players) {
 				playerBestKicker.push(player)
 			}
 		}
-		// if  playerBestKicker includes Community Player, get rid of community player
 
 		return returnResults(playerBestKicker)
 	}
@@ -452,11 +441,11 @@ function determineWinner(players) {
 function testConsole() {
 	const testArray = [
 		{
-			name: "Chop - Counterfeited Flush",
-			communityCards: ["5H", "7H", "9H", "10H", "QH"],
+			name: "Royal",
+			communityCards: ["6H", "7H", "10C", "JC", "QC"],
 			players: [
-				["2H", "3H"],
-				["KD", "KC"],
+				["KC", "AC"],
+				["8C", "9C"],
 			],
 		},
 	]

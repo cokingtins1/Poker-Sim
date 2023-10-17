@@ -1,15 +1,25 @@
-import checkCombos from "./checkHand.js"
-
-import { deck } from "./script.js"
+import { checkCombos } from "./checkHand.js"
 
 export const NUM_PLAYERS = 4
 
-class Player {
-	constructor(name, hand, chips) {
+export class Player {
+	constructor(
+		name,
+		hand,
+		handInfo,
+		handValue,
+		playerHandVal,
+		communityHand,
+		communityHandVal,
+		chips
+	) {
 		this.name = name
 		this.hand = hand
-		this.handInfo = undefined
-		this.handValue = undefined
+		this.handInfo = handInfo
+		this.handValue = handValue
+		this.playerHandVal = playerHandVal
+		this.communityHand = communityHand
+		this.communityHandVal = communityHandVal
 		this.chips = chips
 	}
 }
@@ -104,7 +114,10 @@ export class Deck {
 		for (let i = 0; i < NUM_PLAYERS; i++) {
 			const result = checkCombos(players[i].hand, this.communityCards)
 			players[i].handValue = result.handName
+			players[i].playerHandVal = result.playerHandVal
+			players[i].communityHandVal = result.communityHandVal
 			players[i].handInfo = result.hand
+			
 		}
 	}
 }
@@ -113,15 +126,23 @@ export function createPlayers(NUM_PLAYERS) {
 	const players = []
 
 	for (let i = 1; i <= NUM_PLAYERS; i++) {
-		const playerName = `Player ${i}`
+		const playerName = `Player ${i + 1}`
 		const playerHand = []
+		const handInfo = []
 		const handValue = null
+		const playerHandVal = null
+		const communityHand = []
+		const communityHandVal = null
 		const playerChips = 1000
 
 		const player = new Player(
 			playerName,
 			playerHand,
+			handInfo,
 			handValue,
+			playerHandVal,
+			communityHand,
+			communityHandVal,
 			playerChips
 		)
 		players.push(player)
@@ -129,4 +150,3 @@ export function createPlayers(NUM_PLAYERS) {
 
 	return players
 }
-
