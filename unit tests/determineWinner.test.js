@@ -198,6 +198,16 @@ describe("Check Winner", () => {
 				["4D", "QD"],
 			],
 		},
+		{
+			name: "Chop - Full House ",
+			communityCards: ["2D", "2H", "QD", "QH", "QS"],
+			players: [
+				["6S", "AS"],
+				["JC", "KC"],
+			],
+
+			expect: chopMessage,
+		},
 	]
 
 	testArray.forEach((testcase) => {
