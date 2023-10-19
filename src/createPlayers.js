@@ -1,6 +1,6 @@
 import { checkCombos } from "./checkHand.js"
 
-export const NUM_PLAYERS = 4
+export const NUM_PLAYERS = 6
 
 export class Player {
 	constructor(
@@ -126,7 +126,7 @@ export function createPlayers(NUM_PLAYERS) {
 	const players = []
 
 	for (let i = 1; i <= NUM_PLAYERS; i++) {
-		const playerName = `Player ${i + 1}`
+		const playerName = `Player ${i}`
 		const playerHand = []
 		const handInfo = []
 		const handValue = null

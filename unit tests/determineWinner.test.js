@@ -208,6 +208,55 @@ describe("Check Winner", () => {
 
 			expect: chopMessage,
 		},
+		{
+			name: "Pair Kicker - Comm has pair ",
+			communityCards: ["3D", "3C", "6H", "9H", "JC"],
+			players: [
+				["7D", "AD"],
+				["8S", "KS"],
+			],
+		},
+		{
+			name: "Pair Kicker - Players share pair ",
+			communityCards: ["2C", "3D", "7H", "9H", "JC"],
+			players: [
+				["7D", "AD"],
+				["7C", "KS"],
+			],
+		},
+		{
+			name: "Trip Kicker - Comm has trip ",
+			communityCards: ["2C", "3D", "7D", "7C", "7H", "AC"],
+			players: [
+				["10C", "JD"],
+				["9S", "10S"],
+			],
+		},
+		{
+			name: "Two Pair - Comm has Two Pair ",
+			communityCards: ["6D", "6C", "8H", "8S", "KH"],
+			players: [
+				["3C", "QD"],
+				["3H", "10S"],
+			],
+		},
+		{
+			name: "Two Pair - Comm shares Two Pair ",
+			communityCards: ["6D", "8H", "8S", "AH"],
+			players: [
+				["6C", "JC"],
+				["3H", "6H"],
+			],
+		},
+		{
+			name: "Two Pair - Comm has no two pair ",
+			communityCards: ["2S", "4C", "6D", "8D", "AH"],
+			players: [
+				["6C", "8C"],
+				["6H", "8H"],
+			],
+			expect: chopMessage,
+		},
 	]
 
 	testArray.forEach((testcase) => {
