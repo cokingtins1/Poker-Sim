@@ -1,5 +1,5 @@
 import { createPlayers, Deck, NUM_PLAYERS } from "./createPlayers.js"
-import { renderCards } from "./renderCardImg.js"
+import { renderCards, getMessage } from "./renderCardImg.js"
 import { determineWinner } from "./checkHand.js"
 
 const setUpButton = document.querySelector("[data-button-setup]")
@@ -9,6 +9,7 @@ const riverButton = document.querySelector("[data-button-river]")
 
 const tableDiv = document.querySelector("[data-table")
 const winner = document.querySelector("[data-winner]")
+const winnerHandMsg = document.querySelector("[data-winnerHandMsg]")
 
 const playerTemplate = document.getElementById("playerTemplate")
 const playerDiv = document.querySelector("[data-players]")
@@ -81,11 +82,22 @@ function updateHandValue() {
 		playerHandVal.textContent = player.handValue
 	})
 
-	
 	const finalResult = determineWinner(players)
-	winner.textContent = `${finalResult} is the winner`
+	displayWinnerMessage(finalResult)
 }
 
+function displayWinnerMessage(players) {
+	if (players.length > 1) {
+		winner.textContent = "Chop Pot!"
+		winnerHandMsg.textContent = `${players[0].handName}`
+	} else {
+		winner.textContent = players[0].name
+		winnerHandMsg.textContent = getMessage(
+			players[0].handInfo.order,
+			players[0].handInfo.message
+		)
+	}
+}
 
 // const communityCards = ["KD", "3H", "4H", "5H", "6H"]
 // const playerCards = ["7D", "JH"]

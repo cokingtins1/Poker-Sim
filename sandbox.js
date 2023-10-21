@@ -1,20 +1,25 @@
-console.log(convertValue([11, 7])) //[10,9] [9,10]
+function convertToString(value) {
+    const wordsMap = new Map([
+        [2, "deuce"],
+        [3, "three"],
+        [4, "four"],
+        [5, "five"],
+        [6, "six"],
+        [7, "seven"],
+        [8, "eight"],
+        [9, "nine"],
+        [10, "ten"],
+        [11, "jack"],
+        [12, "queen"],
+        [13, "king"],
+        [14, "ace"]
+    ]);
 
-function convertValue(fullHouseVal) {
-	let num1, num2;
-
-	if (fullHouseVal[0] > 9) {
-		num1 = (fullHouseVal[0] / 10).toFixed(1).toString();
-	} else {
-		num1 = (fullHouseVal[0] / 10).toFixed(1);
-	}
-	
-	num2 = (fullHouseVal[1] > 9) ? fullHouseVal[1].toString() : "0" + fullHouseVal[1].toString();
-	
-	const sum = num1 + num2;
-	return sum;
+    if (Array.isArray(value)) {
+        return value.map(card => wordsMap.get(card) || "Invalid card value");
+    } else {
+        return wordsMap.get(value) || "Invalid card value";
+    }
 }
 
-console.log(1.01 > -1)
-
-
+console.log(convertToString([5,7]))
