@@ -84,14 +84,14 @@ function checkCombos(playerHand = [], community = []) {
 			pair.value = index
 			pair.has = true
 			pair.order = 2
-			// pair.kicker = returnKicker(pair.value, pair.order)
+			pair.kicker = returnKicker(pair.value, pair.order)
 			twoPairCombo.push(index)
 		} else if (groupedByValue[index].length === 3) {
 			trip.value = index
 			trip.has = true
 			trip.order = 4
 
-			// trip.kicker = returnKicker(trip.value, trip.order)
+			trip.kicker = returnKicker(trip.value, trip.order)
 			twoPairCombo.push(index)
 			falseTrip.count += 1
 			falseTrip.count === 1 ? (falseTrip.tripOne = index) : []
@@ -101,7 +101,7 @@ function checkCombos(playerHand = [], community = []) {
 				? (falseTrip.kicker = [falseTrip.tripOne, falseTrip.tripTwo])
 				: []
 		} else if (groupedByValue[index].length === 4) {
-			quad.value = [index]
+			quad.value = index
 			quad.has = true
 			quad.order = 8
 		}
@@ -109,86 +109,13 @@ function checkCombos(playerHand = [], community = []) {
 
 	// Check for Two Pair
 	if (twoPairCombo.length > 1) {
-		twoPair.value = twoPairCombo
+		twoPair.value = parseInt(
+			twoPairCombo.slice(-2)[0].toString() +
+				twoPairCombo.slice(-2)[1].toString()
+		)
 		twoPair.has = true
 		twoPair.order = 3
-		twoPair.kicker = returnKicker(twoPair.value, twoPair.order)
-	}
-
-	function returnKicker(cardInvolved, order) {
-		// FOR HIGH CARD:
-		// Kickers do not play at all. Split if high cards are the same
-
-		// 	FOR PAIR: 2
-		// 	// if count === 0, player contains the pair, no kicker
-		// 	// if count === 1, player shares the pair, kicker is greatest card that is not in pair
-		// 	// if count === 2, comm owns the pair, kicker is greatest card in HAND (not combined - comm can have the ace, doesn't matter)
-
-		// 	FOR TRIPS - kicker only plays if comm owns trips (two players can't have same trip)
-		// 	// if count === 0, comm owns the trip, kicker is greatest card in HAND
-		// else, kicker = null
-
-		// FOR TWO-PAIR
-		// if comm owns two pair, kicker plays -> kicker = highest playerHandVal
-		// check if remaining comm card is greater than either tying player card.
-		// if yes, split
-		// if no, winner is higher kicker
-		// If comm owns one pair and splits with player, kicker plays
-		// if comm owns one pair and player owns the other, split pot
-
-		let kicker = null
-		let count = null
-
-		// console.log("player hand val:", __playerHandVal)
-		// console.log("community hand val:", __communityHandVal)
-
-		if (order === 2 || order === 4) {
-			count = __communityHandVal.reduce(
-				(acc, num) => acc + (num === cardInvolved),
-				0
-			)
-		}
-
-		if (order === 2) {
-			if (count === 0) {
-				//player contains the pair, no kicker
-				kicker = 0
-			} else if (count === 1) {
-				// player shares the pair, kicker is greatest card that is not in pair
-				kicker = __playerHandVal.filter((value) => {
-					return value !== cardInvolved
-				})[0]
-			} else if (count === 2) {
-				// comm owns the pair, kicker is greatest card in HAND
-				kicker = Math.max(...__playerHandVal)
-			}
-		}
-
-		if (order === 3) {
-			let notUsed = []
-			notUsed = __playerHandVal.filter((value) => {
-				return __communityHandVal.indexOf(value) === -1
-			})
-
-			if (notUsed.length === 0) {
-				// Both player cards are involved in the two pair - no kicker
-				kicker = 0
-			}
-
-			if (notUsed.length === 1) {
-				// One player card is involved in the two pair - kicker
-				__playerHandVal.filter((value) => {
-					return notUsed.includes(value)
-				})
-			}
-
-			if (notUsed.length === 2) {
-				// No player cards are involved in the two pair (comm owns) - kicker
-				kicker = Math.max(...__playerHandVal)
-			}
-		}
-
-		return kicker
+		twoPair.kicker = returnKicker(twoPairCombo.slice(-2), twoPair.order)
 	}
 
 	// Check Straight
@@ -262,23 +189,26 @@ function checkCombos(playerHand = [], community = []) {
 	// Check for Full House
 	if (falseTrip.count === 2) {
 		fullHouse.has = true
-		fullHouse.value = [
+		fullHouse.kicker = [
 			Math.max(...falseTrip.kicker),
 			Math.min(...falseTrip.kicker),
-		] //higher of the trip
+		]
+		fullHouse.value = convertValue(fullHouse.kicker)
 		fullHouse.order = 7
 	}
 
 	if (trip.has === true && pair.has === true) {
 		fullHouse.has = true
-		fullHouse.value = [
+
+		fullHouse.kicker = [
 			trip.value,
 			twoPair.has
-				? Math.max(...twoPair.value) !== trip.value
-					? Math.max(...twoPair.value)
-					: Math.min(...twoPair.value)
+				? Math.max(...twoPairCombo.slice(-2)) !== trip.value
+					? Math.max(...twoPairCombo.slice(-2))
+					: Math.min(...twoPairCombo.slice(-2))
 				: undefined,
 		]
+		fullHouse.value = convertValue(fullHouse.kicker) // [trip, pair] -> [10,2] = 1.02 [2,10] -> .210
 		fullHouse.order = 7
 	}
 
@@ -300,6 +230,8 @@ function checkCombos(playerHand = [], community = []) {
 		highCard.has = true
 		highCard.value = [Math.max(...valueArray)]
 		highCard.order = 1
+
+		highCard.kicker = Math.max(...__playerHandVal)
 	}
 
 	// Return hand that player has
@@ -324,43 +256,133 @@ function checkCombos(playerHand = [], community = []) {
 	// return HAND_MAP.get(hand.order)
 	return handResult
 
-	// return this for testing
-	// return handRanks
-}
+	function returnKicker(cardInvolved, order) {
+		// FOR HIGH CARD:
+		// Kickers do not play at all. Split if high cards are the same
 
-function parseCards(card) {
-	const parsedCards = card.map((card) => {
-		const valueMap = { J: 10, Q: 11, K: 12, A: 13 }
-		const value =
-			valueMap[card.slice(0, -1)] || parseInt(card.slice(0, -1)) - 1
-		const suitMap = { D: 0, C: 1, H: 2, S: 3 }
-		const suitCode = suitMap[card.slice(-1)]
-		return { value, suitCode }
-	})
+		// 	FOR PAIR: 2
+		// 	// if count === 0, player contains the pair, no kicker
+		// 	// if count === 1, player shares the pair, kicker is greatest card that is not in pair
+		// 	// if count === 2, comm owns the pair, kicker is greatest card in HAND (not combined - comm can have the ace, doesn't matter)
 
-	parsedCards.sort((a, b) => a.value - b.value) // Sort cards by value
-	return parsedCards
-}
+		// 	FOR TRIPS - kicker only plays if comm owns trips (two players can't have same trip)
+		// 	// if count === 0, comm owns the trip, kicker is greatest card in HAND
+		// else, kicker = null
 
-function createRank() {
-	return {
-		value: undefined,
-		has: false,
-		order: 0,
-		kicker: null,
-	}
-}
+		// FOR TWO-PAIR
+		// if comm owns two pair, kicker plays -> kicker = highest playerHandVal
+		// check if remaining comm card is greater than either tying player card.
+		// if yes, split
+		// if no, winner is higher kicker
+		// If comm owns one pair and splits with player, kicker plays
+		// if comm owns one pair and player owns the other, split pot
 
-function groupBy(array, func) {
-	return array.reduce((grouping, element) => {
-		const key = func(element)
-		if (grouping[key]) {
-			grouping[key].push(element)
-		} else {
-			grouping[key] = [element]
+		let kicker = null
+		let count = null
+
+		if (order === 2 || order === 4) {
+			count = __communityHandVal.filter(
+				(num) => num === cardInvolved
+			).length
 		}
-		return grouping
-	}, {})
+
+		if (order === 2) {
+			if (count === 0) {
+				//player contains the pair, no kicker
+				kicker = 0
+			} else if (count === 1) {
+				// player shares the pair, kicker is greatest card that is not in pair
+				kicker = __playerHandVal.find((value) => value !== cardInvolved)
+			} else if (count === 2) {
+				// comm owns the pair, kicker is greatest card in HAND
+				kicker = Math.max(...__playerHandVal)
+			}
+		}
+
+		if (order === 3) {
+			let notUsed = []
+			notUsed = __playerHandVal.filter((value) => {
+				return cardInvolved.indexOf(value) === -1
+			})
+
+			if (notUsed.length === 0) {
+				// Both player cards are involved in the two pair - no kicker
+				kicker = 0
+			}
+
+			if (notUsed.length === 1) {
+				// One player card is involved in the two pair - kicker
+				__playerHandVal.filter((value) => {
+					return notUsed.includes(value)
+				})
+			}
+
+			if (notUsed.length === 2) {
+				// No player cards are involved in the two pair (comm owns) - kicker
+				kicker = Math.max(...__playerHandVal)
+			}
+		}
+
+		if (order === 4 && count === 3) {
+			// comm owns trips, kicker = highest player hand
+			kicker = Math.max(...__playerHandVal)
+		}
+
+		return kicker
+	}
+
+	function parseCards(card) {
+		const parsedCards = card.map((card) => {
+			const valueMap = { J: 10, Q: 11, K: 12, A: 13 }
+			const value =
+				valueMap[card.slice(0, -1)] || parseInt(card.slice(0, -1)) - 1
+			const suitMap = { D: 0, C: 1, H: 2, S: 3 }
+			const suitCode = suitMap[card.slice(-1)]
+			return { value, suitCode }
+		})
+
+		parsedCards.sort((a, b) => a.value - b.value) // Sort cards by value
+		return parsedCards
+	}
+
+	function createRank() {
+		return {
+			value: undefined,
+			has: false,
+			order: 0,
+			kicker: null,
+		}
+	}
+
+	function convertValue(fullHouseVal) {
+		let num1, num2
+
+		if (fullHouseVal[0] > 9) {
+			num1 = (fullHouseVal[0] / 10).toFixed(1).toString()
+		} else {
+			num1 = (fullHouseVal[0] / 10).toFixed(1)
+		}
+
+		num2 =
+			fullHouseVal[1] > 9
+				? fullHouseVal[1].toString()
+				: "0" + fullHouseVal[1].toString()
+
+		const sum = num1 + num2
+		return sum
+	}
+
+	function groupBy(array, func) {
+		return array.reduce((grouping, element) => {
+			const key = func(element)
+			if (grouping[key]) {
+				grouping[key].push(element)
+			} else {
+				grouping[key] = [element]
+			}
+			return grouping
+		}, {})
+	}
 }
 
 // Determine Winner -----------------------------------------------------
@@ -384,10 +406,10 @@ function determineWinner(players) {
 	let winningPlayers = []
 
 	let bestHandValue2 = 0
-	let winningPlayers2 = []
+	let evalKickerPlayers = []
 
 	// Part 1 - Determine winner with best hand value
-	for (let player of allHands) {
+	for (let player of players) {
 		if (player.handInfo.order && player.handInfo.order > bestHandValue) {
 			bestHandValue = player.handInfo.order
 			winningPlayers = [player]
@@ -398,99 +420,47 @@ function determineWinner(players) {
 			winningPlayers.push(player)
 		}
 	}
-
-	if (winningPlayers.length > 1) {
-		for (let player of winningPlayers) {
-			if (
-				player.handInfo.value &&
-				player.handInfo.value > bestHandValue2
-			) {
-				bestHandValue2 = player.handInfo.value
-				winningPlayers2 = [player]
-			} else if (
-				player.handInfo.value &&
-				player.handInfo.value === bestHandValue2
-			) {
-				winningPlayers2.push(player)
-			}
-		}
-	}
-	console.log(winningPlayers2)
-
-	// Part 2 - If players tie, determine best kicker
-
-	const kickerPlaysVal = allHands[0].handInfo.order
-	const sameHandOrder = allHands.every(
-		(player) =>
-			player.handInfo &&
-			player.handInfo.order === allHands[0].handInfo.order
-	)
+	console.log("winningPlayers:", winningPlayers)
 
 	if (winningPlayers.length === 1) {
 		return winningPlayers[0].name
-	}
-
-	if (winningPlayers2.length > 1) {
-		if ([5, 6, 9, 10].includes(kickerPlaysVal)) {
-			// hand is straight, flush, SF, RF or full house
-			return sameHandOrder
-				? evalKicker(allHands)
-				: evalKicker(winningPlayers2)
-		}
-
-		if ([1, 2, 3, 4, 8].includes(kickerPlaysVal)) {
-			// hand is high card, P, 2P, 3, 4
-			return evalKicker(winningPlayers2, true)
-		}
-
-		if (kickerPlaysVal === 7) {
-			return handleFullHouse(winningPlayers2)
+	} else if (winningPlayers.length > 1) {
+		for (let player of winningPlayers) {
+			if (player.handInfo.value > bestHandValue2) {
+				bestHandValue2 = player.handInfo.value
+				evalKickerPlayers = [player]
+			} else if (player.handInfo.value === bestHandValue2) {
+				evalKickerPlayers.push(player)
+			}
 		}
 	}
 
-	function handleFullHouse(players) {
-		let tripsEqaulPlayers = []
-		let choppingPlayers = []
+	console.log("evalKickerPlayers:", evalKickerPlayers)
 
-		players.reduce(
-			(maxObj, currentObj) => {
-				if (currentObj.handInfo.value[0] > maxObj.handInfo.value[0]) {
-					tripsEqaulPlayers.push(currentObj)
-					return currentObj
-				} else if (
-					currentObj.handInfo.value[0] === maxObj.handInfo.value[0]
-				) {
-					tripsEqaulPlayers.push(currentObj)
-				} else {
-					return maxObj
-				}
-			},
-			{ handInfo: { value: [-Infinity, -Infinity] } }
+	// Part 2 - If players tie, determine best kicker
+	if (evalKickerPlayers.length === 1) {
+		return evalKickerPlayers[0].name
+	} else if (evalKickerPlayers.length > 1) {
+		const handOrder = evalKickerPlayers[0].handInfo.order
+
+		// Check if Comm player has same hand as evalKickerPlayers
+		const sameHandOrder = allHands.every(
+			(player) => player.handInfo.order === handOrder
 		)
 
-		if (tripsEqaulPlayers.length > 1) {
-			tripsEqaulPlayers.reduce(
-				(maxObj, currentObj) => {
-					if (
-						currentObj.handInfo.value[1] > maxObj.handInfo.value[1]
-					) {
-						choppingPlayers = [currentObj]
-						return currentObj
-					} else if (
-						currentObj.handInfo.value[1] ===
-						maxObj.handInfo.value[1]
-					) {
-						choppingPlayers.push(currentObj)
-					} else {
-						return maxObj
-					}
-				},
-				{ handInfo: { value: [-Infinity, -1] } }
-			)
-			return returnResults(choppingPlayers)
-		}
+		if (evalKickerPlayers.length > 1) {
+			if ([5, 6, 7, 9, 10].includes(handOrder)) {
+				// hand is straight, flush, SF, RF or full house
+				return sameHandOrder
+					? evalKicker(allHands)
+					: evalKicker(evalKickerPlayers)
+			}
 
-		return returnResults(tripsEqaulPlayers)
+			if ([1, 2, 3, 4, 8].includes(handOrder)) {
+				// hand is high card, P, 2P, 3, 4
+				return evalKicker(evalKickerPlayers, true)
+			}
+		}
 	}
 
 	// Function for who has the highest pair
@@ -503,7 +473,7 @@ function determineWinner(players) {
 			let currentValue
 
 			if (kicker) {
-				currentValue = Math.max(...player.handInfo.kicker) // for pairs
+				currentValue = Math.max(player.handInfo.kicker) // for pairs
 			} else {
 				currentValue = player.handInfo.value //for non-pairs (F, S)
 			}
@@ -515,7 +485,7 @@ function determineWinner(players) {
 				playerBestKicker.push(player)
 			}
 		}
-
+		console.log("playerBestKicker:", playerBestKicker)
 		return returnResults(playerBestKicker)
 	}
 
@@ -548,16 +518,32 @@ function determineWinner(players) {
 function testConsole() {
 	const testArray = [
 		{
-			name: "Royal",
-			communityCards: ["10C", "8S", "8H", "10H", "JC"],
+			name: "14. Chop - Pair w Counterfeited King",
+			communityCards: ["2S", "7D", "JC", "KD", "KS"],
 			players: [
-				["5C", "AC"],
-				["5S", "10S"],
-				["JC", "3S"],
-				["4H", "7C"],
-				["2S", "QD"],
+				["2H", "7H"],
+				["3C", "7S"],
 			],
 		},
+		// {
+		// 	name: "Two Pair - Comm has no two pair ",
+		// 	communityCards: ["2S", "4C", "6D", "8D", "AH"],
+		// 	players: [
+		// 		["6C", "8C"],
+		// 		["6H", "8H"],
+		// 	]
+		// },
+		// {
+		// 	name: "Royal",
+		// 	communityCards: ["10C", "8S", "8H", "10H", "JC"],
+		// 	players: [
+		// 		["5C", "AC"],
+		// 		["5S", "10S"],
+		// 		["JC", "3S"],
+		// 		["4H", "7C"],
+		// 		["2S", "QD"],
+		// 	],
+		// },
 		// {
 		// 	name: "Flush vs Flush",
 		// 	communityCards: ["3D", "4S", "8S", "9S", "JS"],
@@ -598,7 +584,7 @@ function testConsole() {
 		}
 		const winner = determineWinner(players)
 		// console.log("kicker:", players[0].handInfo.kicker)
-		console.log(winner)
+		console.log("winner:", winner)
 	})
 }
 

@@ -41,7 +41,7 @@ describe("Check Winner", () => {
 	const chopMessage = "Chop between Player 1,Player 2"
 	const testArray = [
 		{
-			name: "High Card vs High Card",
+			name: "1. High Card vs High Card",
 			communityCards: ["2D", "4H", "5S", "8C", "JS"],
 			players: [
 				["QD", "KC"],
@@ -49,7 +49,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Pair vs Pair",
+			name: "2. Pair vs Pair",
 			communityCards: ["2D", "4H", "8C", "9D", "QS"],
 			players: [
 				["QD", "KC"],
@@ -57,7 +57,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Two Pair vs Two Pair",
+			name: "3. Two Pair vs Two Pair",
 			communityCards: ["7D", "9S", "10S", "QH", "KH"],
 			players: [
 				["QD", "KC"],
@@ -65,7 +65,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "3Kind vs 3Kind",
+			name: "4. 3Kind vs 3Kind",
 			communityCards: ["2D", "7D", "9S", "JS", "QH"],
 			players: [
 				["QD", "QC"],
@@ -73,7 +73,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Straight vs Straight",
+			name: "5. Straight vs Straight",
 			communityCards: ["3D", "8C", "9H", "10H", "JC"],
 			players: [
 				["QD", "KC"],
@@ -81,7 +81,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Straigh w Ace",
+			name: "6. Straigh w Ace",
 			communityCards: ["8D", "9C", "10C", "JC", "QH"],
 			players: [
 				["KH", "AS"],
@@ -89,7 +89,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Flush vs Flush",
+			name: "7. Flush vs Flush",
 			communityCards: ["3D", "4S", "8C", "9S", "JS"],
 			players: [
 				["QS", "KS"],
@@ -98,7 +98,7 @@ describe("Check Winner", () => {
 		},
 
 		{
-			name: "Full House",
+			name: "8. Full House",
 			communityCards: ["3D", "3C", "3H", "5S", "AC"],
 			players: [
 				["JC", "JH"],
@@ -106,7 +106,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Full House Reversed",
+			name: "9. Full House Reversed",
 			communityCards: ["2S", "6H", "QD", "AC", "AH"],
 			players: [
 				["QS", "AS"],
@@ -114,7 +114,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "4Kind",
+			name: "10. 4Kind",
 			communityCards: ["9D", "9S", "QH", "QS", "AD"],
 			players: [
 				["QD", "QC"],
@@ -122,7 +122,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Straight Flush",
+			name: "11. Straight Flush",
 			communityCards: ["7D", "8D", "9D", "10D", "JD"],
 			players: [
 				["QD", "KD"],
@@ -130,7 +130,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Straight Flush Ace",
+			name: "12. Straight Flush Ace",
 			communityCards: ["2C", "3C", "5C", "6C", "7C"],
 			players: [
 				["8C", "9C"],
@@ -138,7 +138,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Royal",
+			name: "13. Royal",
 			communityCards: ["6H", "7H", "10C", "JC", "QC"],
 			players: [
 				["KC", "AC"],
@@ -146,7 +146,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Chop - Pair w Counterfeited King",
+			name: "14. Chop - Pair w Counterfeited King",
 			communityCards: ["2S", "7D", "JC", "KD", "KS"],
 			players: [
 				["2H", "7H"],
@@ -155,7 +155,7 @@ describe("Check Winner", () => {
 			expect: chopMessage,
 		},
 		{
-			name: "Chop - Counterfeited Straight",
+			name: "15. Chop - Counterfeited Straight",
 			communityCards: ["10S", "JD", "QH", "KD", "AS"],
 			players: [
 				["JS", "AH"],
@@ -165,7 +165,7 @@ describe("Check Winner", () => {
 			expect: chopMessage,
 		},
 		{
-			name: "Chop - Counterfeited Flush",
+			name: "16. Chop - Counterfeited Flush",
 			communityCards: ["5H", "7H", "9H", "10H", "QH"],
 			players: [
 				["2H", "3H"],
@@ -175,15 +175,15 @@ describe("Check Winner", () => {
 			expect: chopMessage,
 		},
 		{
-			name: "Higher Kicker ",
-			communityCards: ["4H", "8C", "KC", "AH", "AS"],
+			name: "17. Higher Kicker ",
+			communityCards: ["4H", "8C", "KC", "AH", "JS"],
 			players: [
 				["2D", "10H"],
 				["2S", "9D"],
 			],
 		},
 		{
-			name: "Comm Trips with Kicker ",
+			name: "18. Comm Trips with Kicker ",
 			communityCards: ["2C", "3C", "JD", "JC", "JH"],
 			players: [
 				["6D", "7D"],
@@ -191,7 +191,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "better FH ",
+			name: "19. better FH ",
 			communityCards: ["10D", "10H", "10S", "JH", "JS"],
 			players: [
 				["3S", "JC"],
@@ -199,7 +199,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Chop - Full House ",
+			name: "20. Chop - Full House ",
 			communityCards: ["2D", "2H", "QD", "QH", "QS"],
 			players: [
 				["6S", "AS"],
@@ -209,7 +209,7 @@ describe("Check Winner", () => {
 			expect: chopMessage,
 		},
 		{
-			name: "Pair Kicker - Comm has pair ",
+			name: "21. Pair Kicker - Comm has pair ",
 			communityCards: ["3D", "3C", "6H", "9H", "JC"],
 			players: [
 				["7D", "AD"],
@@ -217,7 +217,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Pair Kicker - Players share pair ",
+			name: "22. Pair Kicker - Players share pair ",
 			communityCards: ["2C", "3D", "7H", "9H", "JC"],
 			players: [
 				["7D", "AD"],
@@ -225,7 +225,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Trip Kicker - Comm has trip ",
+			name: "23. Trip Kicker - Comm has trip ",
 			communityCards: ["2C", "3D", "7D", "7C", "7H", "AC"],
 			players: [
 				["10C", "JD"],
@@ -233,7 +233,7 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Two Pair - Comm has Two Pair ",
+			name: "24. Two Pair - Comm has Two Pair ",
 			communityCards: ["6D", "6C", "8H", "8S", "KH"],
 			players: [
 				["3C", "QD"],
@@ -241,15 +241,15 @@ describe("Check Winner", () => {
 			],
 		},
 		{
-			name: "Two Pair - Comm shares Two Pair ",
-			communityCards: ["6D", "8H", "8S", "AH"],
+			name: "25. Two Pair - Comm shares Two Pair ",
+			communityCards: ["6D", "8H", "8S", "AH", "AC"],
 			players: [
 				["6C", "JC"],
 				["3H", "6H"],
 			],
 		},
 		{
-			name: "Two Pair - Comm has no two pair ",
+			name: "26. Two Pair - Comm has no two pair ",
 			communityCards: ["2S", "4C", "6D", "8D", "AH"],
 			players: [
 				["6C", "8C"],
