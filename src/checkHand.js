@@ -12,7 +12,7 @@ addMapping(8, "Four of a Kind")
 addMapping(9, "Straight Flush")
 addMapping(10, "Royal Flush")
 
- function addMapping(values, hand) {
+function addMapping(values, hand) {
 	HAND_MAP.set(values, hand)
 }
 
@@ -94,7 +94,7 @@ export function checkCombos(playerHand = [], community = []) {
 		)
 		twoPair.has = true
 		twoPair.order = 3
-		twoPair.message = [twoPairCombo.slice(-2)[0],twoPairCombo.slice(-2)[1]]
+		twoPair.message = [twoPairCombo.slice(-2)[0], twoPairCombo.slice(-2)[1]]
 		twoPair.kicker = returnKicker(twoPairCombo.slice(-2), twoPair.order)
 	}
 
@@ -196,7 +196,6 @@ export function checkCombos(playerHand = [], community = []) {
 		fullHouse.value = convertValue(fullHouse.kicker) // [trip, pair] -> [10,2] = 1.02 [2,10] -> .210
 		fullHouse.order = 7
 		fullHouse.message = fullHouse.kicker
-
 	}
 
 	const handRanks = {
@@ -337,7 +336,7 @@ export function checkCombos(playerHand = [], community = []) {
 			has: false,
 			order: 0,
 			kicker: null,
-			message: undefined
+			message: undefined,
 		}
 	}
 
@@ -421,7 +420,6 @@ export function determineWinner(players) {
 		}
 	}
 
-
 	// Part 2 - If players tie, determine best kicker
 	if (evalKickerPlayers.length === 1) {
 		return evalKickerPlayers
@@ -474,7 +472,6 @@ export function determineWinner(players) {
 	}
 
 	function returnResults(players) {
-		
 		if (
 			players.length > 1 &&
 			players.some((obj) => obj.name === "Community Player")
