@@ -166,6 +166,7 @@ export function checkCombos(playerHand = [], community = []) {
 			flush.has = true
 			flush.value = flushArray[flushArray.length - 1].value
 			flush.order = 6
+			flush.kicker = returnKicker(flushArray, flush.order)
 			flush.message = flush.value
 		}
 	}
@@ -312,6 +313,29 @@ export function checkCombos(playerHand = [], community = []) {
 		if (order === 4 && count === 3) {
 			// comm owns trips, kicker = highest player hand
 			kicker = Math.max(...__playerHandVal)
+		}
+
+		if (order === 6) {
+			const flushArray = cardInvolved
+			const cardUsed = __playerHand.filter((card) => {
+				return flushArray.some(
+					(involvedCard) =>
+						involvedCard.value === card.value &&
+						involvedCard.suitCode === card.suitCode
+				)
+			})
+			
+			if (cardUsed.length === 0) {
+				kicker = 0
+			} else if (cardUsed.length === 1) {
+				kicker = cardUsed[0].value
+			} else if (cardUsed.length === 2) {
+				kicker = cardUsed.reduce((maxCard, currentCard) => {
+					return currentCard.value > maxCard.value
+						? currentCard
+						: maxCard
+				}, cardUsed[0])
+			}
 		}
 
 		return kicker

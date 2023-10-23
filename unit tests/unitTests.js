@@ -335,15 +335,26 @@ function checkCombos(playerHand = [], community = []) {
 		}
 
 		if (order === 6) {
-			// console.log(__playerSuitVal, __communitySuitVal)
-			// count = __playerSuitVal.filter(
-			// 	(num) => num === cardInvolved
-			// ).length
-			let notUsed = []
-			notUsed = __playerHand.filter((value) => {
-				return cardInvolved.indexOf(value) === -1
+			const flushArray = cardInvolved
+			const cardUsed = __playerHand.filter((card) => {
+				return flushArray.some(
+					(involvedCard) =>
+						involvedCard.value === card.value &&
+						involvedCard.suitCode === card.suitCode
+				)
 			})
-			debugger
+			
+			if (cardUsed.length === 0) {
+				kicker = 0
+			} else if (cardUsed.length === 1) {
+				kicker = cardUsed[0].value
+			} else if (cardUsed.length === 2) {
+				kicker = cardUsed.reduce((maxCard, currentCard) => {
+					return currentCard.value > maxCard.value
+						? currentCard
+						: maxCard
+				}, cardUsed[0])
+			}
 		}
 
 		return kicker
@@ -467,14 +478,14 @@ function determineWinner(players) {
 		)
 
 		if (evalKickerPlayers.length > 1) {
-			if ([5, 6, 7, 9, 10].includes(handOrder)) {
+			if ([5, 7, 9, 10].includes(handOrder)) {
 				// hand is straight, flush, SF, RF or full house
 				return sameHandOrder
 					? evalKicker(allHands)
 					: evalKicker(evalKickerPlayers)
 			}
 
-			if ([1, 2, 3, 4, 8].includes(handOrder)) {
+			if ([1, 2, 3, 4, 6, 8].includes(handOrder)) {
 				// hand is high card, P, 2P, 3, 4
 				return evalKicker(evalKickerPlayers, true)
 			}
@@ -484,6 +495,7 @@ function determineWinner(players) {
 	// Function for who has the highest pair
 
 	function evalKicker(players, kicker = false) {
+		debugger
 		let bestKickerValue = -1
 		let playerBestKicker = []
 
@@ -536,11 +548,11 @@ function determineWinner(players) {
 function testConsole() {
 	const testArray = [
 		{
-			name: "27. Flush - Board has flush ",
-			communityCards: ["QS", "10S", "3S", "4S", "2S"],
+			name: "27. Flush - Board has flush, player 1 best kicker ",
+			communityCards: ["9D", "JD", "2S", "KD", "AD"],
 			players: [
-				["JS", "JD"],
-				["9S", "6D"],
+				["AC", "7D"],
+				["QS", "6D"],
 			],
 		},
 		// {

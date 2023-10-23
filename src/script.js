@@ -90,9 +90,8 @@ function displayWinnerMessage(players) {
 	
 	if (players.length > 1) {
 		winner.textContent = "Chop Pot!"
-		winnerHandMsg.textContent = `${players[0].handName}`
+		winnerHandMsg.textContent = `${players[0].name}`
 	} else {
-		console.log(players)
 		winner.textContent = players[0].name
 		winnerHandMsg.textContent = getMessage(
 			players[0].handInfo.order,

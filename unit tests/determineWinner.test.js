@@ -258,6 +258,14 @@ describe("Check Winner", () => {
 			expect: chopMessage,
 		},
 		{
+			name: "27. Flush - Board has flush, player 1 best kicker ",
+			communityCards: ["9D", "JD", "2S", "KD", "AD"],
+			players: [
+				["AC", "7D"],
+				["QS", "6D"],
+			],
+		},
+		{
 			name: "27. Flush - Board has flush ",
 			communityCards: ["QS", "10S", "3S", "4S", "2D"],
 			players: [
