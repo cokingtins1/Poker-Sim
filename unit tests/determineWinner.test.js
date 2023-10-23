@@ -257,6 +257,14 @@ describe("Check Winner", () => {
 			],
 			expect: chopMessage,
 		},
+		{
+			name: "27. Flush - Board has flush ",
+			communityCards: ["QS", "10S", "3S", "4S", "2D"],
+			players: [
+				["JS", "JD"],
+				["9S", "6D"],
+			],
+		},
 	]
 
 	testArray.forEach((testcase) => {

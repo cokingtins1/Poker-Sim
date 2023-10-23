@@ -215,7 +215,7 @@ export function checkCombos(playerHand = [], community = []) {
 	// Assign high card if no other hands are present
 	if (Object.values(handRanks).every((rank) => rank.order === 0)) {
 		highCard.has = true
-		highCard.value = [Math.max(...valueArray)]
+		highCard.value = Math.max(...valueArray)
 		highCard.order = 1
 		highCard.kicker = Math.max(...__playerHandVal)
 		highCard.message = highCard.value
@@ -396,6 +396,7 @@ export function determineWinner(players) {
 	let evalKickerPlayers = []
 
 	// Part 1 - Determine winner with best hand value
+	
 	for (let player of players) {
 		if (player.handInfo.order && player.handInfo.order > bestHandValue) {
 			bestHandValue = player.handInfo.order
@@ -407,7 +408,7 @@ export function determineWinner(players) {
 			winningPlayers.push(player)
 		}
 	}
-
+	
 	if (winningPlayers.length === 1) {
 		return winningPlayers
 	} else if (winningPlayers.length > 1) {
@@ -421,7 +422,7 @@ export function determineWinner(players) {
 		}
 	}
 
-
+	
 	// Part 2 - If players tie, determine best kicker
 	if (evalKickerPlayers.length === 1) {
 		return evalKickerPlayers
@@ -474,13 +475,13 @@ export function determineWinner(players) {
 	}
 
 	function returnResults(players) {
-		
+		console.log(players)
 		if (
 			players.length > 1 &&
 			players.some((obj) => obj.name === "Community Player")
 		) {
 			players = players.filter((obj) => obj.name !== "Community Player")
-			return [players]
+			return players
 
 			// const choppingPlayerNames = getNames(players)
 			// return `Chop between ${choppingPlayerNames}`
@@ -488,11 +489,11 @@ export function determineWinner(players) {
 			players.length > 1 &&
 			players.some((obj) => obj.name !== "Community Player")
 		) {
-			return [players]
+			return players
 			// const choppingPlayerNames = getNames(players)
 			// return `Chop between ${choppingPlayerNames}`
 		} else {
-			return [players]
+			return players
 		}
 	}
 

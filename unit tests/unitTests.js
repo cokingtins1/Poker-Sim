@@ -47,8 +47,11 @@ function checkCombos(playerHand = [], community = []) {
 
 	const __playerHand = parseCards(playerHand)
 	const __playerHandVal = __playerHand.map((card) => card.value)
+	const __playerSuitVal = __playerHand.map((card) => card.suitCode)
+
 	const __communityHand = parseCards(community)
 	const __communityHandVal = __communityHand.map((card) => card.value)
+	const __communitySuitVal = __communityHand.map((card) => card.suitCode)
 
 	const array = parseCards(inputArray)
 
@@ -179,10 +182,13 @@ function checkCombos(playerHand = [], community = []) {
 
 	for (const key of keys) {
 		if (groupedBySuit[key].length >= 5) {
-			const flushArray = groupedBySuit[key]
+			const flushArray = groupedBySuit[key].slice(
+				groupedBySuit[key].length - 5
+			)
 			flush.has = true
 			flush.value = flushArray[flushArray.length - 1].value
 			flush.order = 6
+			flush.kicker = returnKicker(flushArray, flush.order)
 		}
 	}
 
@@ -228,7 +234,7 @@ function checkCombos(playerHand = [], community = []) {
 	// Assign high card if no other hands are present
 	if (Object.values(handRanks).every((rank) => rank.order === 0)) {
 		highCard.has = true
-		highCard.value = [Math.max(...valueArray)]
+		highCard.value = Math.max(...valueArray)
 		highCard.order = 1
 
 		highCard.kicker = Math.max(...__playerHandVal)
@@ -326,6 +332,18 @@ function checkCombos(playerHand = [], community = []) {
 		if (order === 4 && count === 3) {
 			// comm owns trips, kicker = highest player hand
 			kicker = Math.max(...__playerHandVal)
+		}
+
+		if (order === 6) {
+			// console.log(__playerSuitVal, __communitySuitVal)
+			// count = __playerSuitVal.filter(
+				// 	(num) => num === cardInvolved
+				// ).length
+				let notUsed = []
+				notUsed = __playerHand.filter((value) => {
+					return cardInvolved.indexOf(value) === -1
+				})
+				debugger
 		}
 
 		return kicker
@@ -518,11 +536,11 @@ function determineWinner(players) {
 function testConsole() {
 	const testArray = [
 		{
-			name: "14. Chop - Pair w Counterfeited King",
-			communityCards: ["2S", "7D", "JC", "KD", "KS"],
+			name: "27. Flush - Board has flush ",
+			communityCards: ["QS", "10S", "3S", "4S", "2S"],
 			players: [
-				["2H", "7H"],
-				["3C", "7S"],
+				["JS", "JD"],
+				["9S", "6D"],
 			],
 		},
 		// {
