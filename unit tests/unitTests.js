@@ -337,13 +337,13 @@ function checkCombos(playerHand = [], community = []) {
 		if (order === 6) {
 			// console.log(__playerSuitVal, __communitySuitVal)
 			// count = __playerSuitVal.filter(
-				// 	(num) => num === cardInvolved
-				// ).length
-				let notUsed = []
-				notUsed = __playerHand.filter((value) => {
-					return cardInvolved.indexOf(value) === -1
-				})
-				debugger
+			// 	(num) => num === cardInvolved
+			// ).length
+			let notUsed = []
+			notUsed = __playerHand.filter((value) => {
+				return cardInvolved.indexOf(value) === -1
+			})
+			debugger
 		}
 
 		return kicker
@@ -612,3 +612,5 @@ module.exports = {
 	checkCombos,
 	determineWinner,
 }
+
+// adding this as a test
