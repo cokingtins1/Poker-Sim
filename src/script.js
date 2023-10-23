@@ -87,15 +87,15 @@ function updateHandValue() {
 }
 
 function displayWinnerMessage(players) {
-	
+	console.log(players)
 	if (players.length > 1) {
 		winner.textContent = "Chop Pot!"
-		winnerHandMsg.textContent = `${players[0].name}`
+		winnerHandMsg.textContent = `${players.join(" and ")}`
 	} else {
-		winner.textContent = players[0].name
+		winner.textContent = players.name
 		winnerHandMsg.textContent = getMessage(
-			players[0].handInfo.order,
-			players[0].handInfo.message
+			players.handInfo.order,
+			players.handInfo.message, players.handInfo.kicker
 		)
 	}
 }

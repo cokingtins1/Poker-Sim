@@ -12,7 +12,7 @@ addMapping(8, "Four of a Kind")
 addMapping(9, "Straight Flush")
 addMapping(10, "Royal Flush")
 
- function addMapping(values, hand) {
+function addMapping(values, hand) {
 	HAND_MAP.set(values, hand)
 }
 
@@ -94,7 +94,7 @@ export function checkCombos(playerHand = [], community = []) {
 		)
 		twoPair.has = true
 		twoPair.order = 3
-		twoPair.message = [twoPairCombo.slice(-2)[0],twoPairCombo.slice(-2)[1]]
+		twoPair.message = [twoPairCombo.slice(-2)[0], twoPairCombo.slice(-2)[1]]
 		twoPair.kicker = returnKicker(twoPairCombo.slice(-2), twoPair.order)
 	}
 
@@ -197,7 +197,6 @@ export function checkCombos(playerHand = [], community = []) {
 		fullHouse.value = convertValue(fullHouse.kicker) // [trip, pair] -> [10,2] = 1.02 [2,10] -> .210
 		fullHouse.order = 7
 		fullHouse.message = fullHouse.kicker
-
 	}
 
 	const handRanks = {
@@ -218,7 +217,7 @@ export function checkCombos(playerHand = [], community = []) {
 		highCard.has = true
 		highCard.value = Math.max(...valueArray)
 		highCard.order = 1
-		highCard.kicker = Math.max(...__playerHandVal)
+		highCard.kicker = Math.min(...__playerHandVal)
 		highCard.message = highCard.value
 	}
 
@@ -324,7 +323,7 @@ export function checkCombos(playerHand = [], community = []) {
 						involvedCard.suitCode === card.suitCode
 				)
 			})
-			
+
 			if (cardUsed.length === 0) {
 				kicker = 0
 			} else if (cardUsed.length === 1) {
@@ -361,7 +360,7 @@ export function checkCombos(playerHand = [], community = []) {
 			has: false,
 			order: 0,
 			kicker: null,
-			message: undefined
+			message: undefined,
 		}
 	}
 
@@ -420,7 +419,7 @@ export function determineWinner(players) {
 	let evalKickerPlayers = []
 
 	// Part 1 - Determine winner with best hand value
-	
+
 	for (let player of players) {
 		if (player.handInfo.order && player.handInfo.order > bestHandValue) {
 			bestHandValue = player.handInfo.order
@@ -432,9 +431,9 @@ export function determineWinner(players) {
 			winningPlayers.push(player)
 		}
 	}
-	
+
 	if (winningPlayers.length === 1) {
-		return winningPlayers
+		return returnResults(winningPlayers)
 	} else if (winningPlayers.length > 1) {
 		for (let player of winningPlayers) {
 			if (player.handInfo.value > bestHandValue2) {
@@ -446,10 +445,9 @@ export function determineWinner(players) {
 		}
 	}
 
-	
 	// Part 2 - If players tie, determine best kicker
 	if (evalKickerPlayers.length === 1) {
-		return evalKickerPlayers
+		return returnResults(evalKickerPlayers)
 	} else if (evalKickerPlayers.length > 1) {
 		const handOrder = evalKickerPlayers[0].handInfo.order
 
@@ -499,25 +497,19 @@ export function determineWinner(players) {
 	}
 
 	function returnResults(players) {
-		console.log(players)
 		if (
 			players.length > 1 &&
 			players.some((obj) => obj.name === "Community Player")
 		) {
 			players = players.filter((obj) => obj.name !== "Community Player")
 			return players
-
-			// const choppingPlayerNames = getNames(players)
-			// return `Chop between ${choppingPlayerNames}`
 		} else if (
 			players.length > 1 &&
 			players.some((obj) => obj.name !== "Community Player")
 		) {
-			return players
-			// const choppingPlayerNames = getNames(players)
-			// return `Chop between ${choppingPlayerNames}`
+			return players[0]
 		} else {
-			return players
+			return players[0]
 		}
 	}
 

@@ -237,7 +237,7 @@ function checkCombos(playerHand = [], community = []) {
 		highCard.value = Math.max(...valueArray)
 		highCard.order = 1
 
-		highCard.kicker = Math.max(...__playerHandVal)
+		highCard.kicker = Math.min(...__playerHandVal)
 	}
 
 	// Return hand that player has
@@ -343,7 +343,7 @@ function checkCombos(playerHand = [], community = []) {
 						involvedCard.suitCode === card.suitCode
 				)
 			})
-			
+
 			if (cardUsed.length === 0) {
 				kicker = 0
 			} else if (cardUsed.length === 1) {

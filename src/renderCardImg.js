@@ -14,55 +14,60 @@ export function renderCards(
 	})
 }
 
-
 export function convertToString(value) {
-    const wordsMap = new Map([
-        [1, "Deuce"],
-        [2, "Three"],
-        [3, "Four"],
-        [4, "Five"],
-        [5, "Six"],
-        [6, "Seven"],
-        [7, "Eight"],
-        [8, "Nine"],
-        [9, "Ten"],
-        [10, "Jack"],
-        [11, "Queen"],
-        [12, "King"],
-        [13, "Ace"]
-    ]);
+	const wordsMap = new Map([
+		[1, "Deuce"],
+		[2, "Three"],
+		[3, "Four"],
+		[4, "Five"],
+		[5, "Six"],
+		[6, "Seven"],
+		[7, "Eight"],
+		[8, "Nine"],
+		[9, "Ten"],
+		[10, "Jack"],
+		[11, "Queen"],
+		[12, "King"],
+		[13, "Ace"],
+	])
 
-    if (Array.isArray(value)) {
-        return value.map(card => wordsMap.get(card) || "Invalid card value");
-    } else {
-        return wordsMap.get(value) || "Invalid card value";
-    }
+	if (Array.isArray(value)) {
+		return value.map((card) => wordsMap.get(card) || "Invalid card value")
+	} else {
+		return wordsMap.get(value) || "Invalid card value"
+	}
 }
 
-export function getMessage(order, value) {
+export function getMessage(order, value, kicker) {
+	let kickerMsg = ""
+	if (kicker) {
+		kickerMsg = `, ${convertToString(kicker)} kicker`
+	}
 
-	const valueString = convertToString (value)
-	
+	const valueString = convertToString(value)
+
 	let message = `${HAND_MAP.get(order)}`
 	switch (order) {
 		case 1:
-			message += `, ${valueString}-high`
+			message += `, ${valueString}-high${kickerMsg}`
 			break
 		case 2:
-			message += ` of ${valueString}'s`
+			message += ` of ${valueString}'s${kickerMsg}`
 			break
 		case 3:
 			let [value1, value2] = valueString
-			message += `, ${value1}'s and ${value2}'s`
+			message += `, ${value1}'s and ${value2}'s${kickerMsg}`
 			break
 		case 4:
 		case 8:
-			message += `, ${valueString}'s`
+			message += `, ${valueString}'s${kickerMsg}`
 			break
 		case 5:
 		case 6:
+			message += `${valueString}-high,${kickerMsg}`
+			break
 		case 9:
-			message += ` ${valueString}-high`
+			message += `, ${valueString}-high`
 			break
 		case 7:
 			let [trip, pair] = valueString

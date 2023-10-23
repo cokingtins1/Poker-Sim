@@ -1,6 +1,6 @@
 import { checkCombos } from "./checkHand.js"
 
-export const NUM_PLAYERS = 6
+export const NUM_PLAYERS = 15
 
 export class Player {
 	constructor(
